@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>URIX HRMS — Employee Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:    #0F1428;
+  --blue:    #2563EB;
+  --blue-lt: #EFF6FF;
+  --green:   #16A34A;
+  --green-lt:#F0FDF4;
+  --amber:   #D97706;
+  --amber-lt:#FFFBEB;
+  --red:     #DC2626;
+  --red-lt:  #FEF2F2;
+  --slate:   #64748B;
+  --border:  #E2E8F0;
+  --bg:      #F8FAFC;
+  --white:   #FFFFFF;
+  --text:    #1E293B;
+  --radius:  12px;
+  --shadow:  0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── LOGIN ── */
+#loginScreen {
+  background: var(--navy);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.login-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.3);
+}
+.login-logo {
+  width: 56px; height: 56px;
+  background: var(--navy);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 20px;
+}
+.login-title {
+  font-size: 22px; font-weight: 700;
+  color: var(--navy); margin-bottom: 4px;
+}
+.login-sub {
+  font-size: 13px; color: var(--slate);
+  margin-bottom: 32px;
+}
+
+/* ── FORM ELEMENTS ── */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block; font-size: 13px;
+  font-weight: 600; color: var(--text);
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: inherit; font-size: 15px;
+  color: var(--text); background: var(--white);
+  transition: border-color .2s;
+  outline: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+.field textarea { resize: vertical; min-height: 80px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center;
+  justify-content: center; gap: 8px;
+  padding: 12px 20px; border-radius: var(--radius);
+  font-family: inherit; font-size: 15px;
+  font-weight: 600; border: none;
+  cursor: pointer; transition: all .18s;
+  text-decoration: none; white-space: nowrap;
+}
+.btn-primary {
+  background: var(--blue); color: var(--white);
+  width: 100%; padding: 14px;
+}
+.btn-primary:hover { background: #1D4ED8; }
+.btn-primary:disabled { background: var(--slate); cursor: not-allowed; }
+.btn-success { background: var(--green); color: var(--white); }
+.btn-success:hover { background: #15803D; }
+.btn-danger { background: var(--red-lt); color: var(--red); }
+.btn-danger:hover { background: #FEE2E2; }
+.btn-ghost {
+  background: transparent; color: var(--slate);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover { background: var(--bg); }
+.btn-sm { padding: 8px 14px; font-size: 13px; }
+.btn-full { width: 100%; }
+
+/* ── ALERT ── */
+.alert {
+  padding: 12px 16px; border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  margin-bottom: 16px; display: none;
+}
+.alert.show { display: block; }
+.alert-error { background: var(--red-lt); color: var(--red); }
+.alert-success { background: var(--green-lt); color: var(--green); }
+.alert-warning { background: var(--amber-lt); color: var(--amber); }
+
+/* ── APP LAYOUT ── */
+#appScreen { background: var(--bg); }
+.app-header {
+  background: var(--navy);
+  padding: 16px 20px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.app-header-left { display: flex; align-items: center; gap: 12px; }
+.app-logo {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,.1);
+  border-radius: 10px;
+  display: flex; align-items: center;
+  justify-content: center; font-size: 18px;
+}
+.app-title { color: var(--white); font-weight: 700; font-size: 16px; }
+.app-user {
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+}
+.btn-logout {
+  background: rgba(255,255,255,.1);
+  border: none; color: var(--white);
+  padding: 8px 14px; border-radius: 8px;
+  font-family: inherit; font-size: 13px;
+  font-weight: 600; cursor: pointer;
+}
+.btn-logout:hover { background: rgba(255,255,255,.2); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex; z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 10px 4px 8px;
+  cursor: pointer; border: none; background: none;
+  font-family: inherit; color: var(--slate);
+  font-size: 10px; font-weight: 500;
+  gap: 4px; transition: color .18s;
+}
+.nav-item.active { color: var(--blue); }
+.nav-item .nav-icon { font-size: 20px; line-height: 1; }
+
+/* ── PAGE CONTENT ── */
+.page { display: none; padding: 20px 16px 100px; }
+.page.active { display: block; }
+.page-title {
+  font-size: 20px; font-weight: 700;
+  color: var(--navy); margin-bottom: 4px;
+}
+.page-sub {
+  font-size: 13px; color: var(--slate);
+  margin-bottom: 20px;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 13px; font-weight: 600;
+  color: var(--slate); text-transform: uppercase;
+  letter-spacing: .5px; margin-bottom: 12px;
+}
+
+/* ── STAT CARDS ── */
+.stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--blue);
+}
+.stat-card.green { border-color: var(--green); }
+.stat-card.amber { border-color: var(--amber); }
+.stat-card.red   { border-color: var(--red); }
+.stat-val {
+  font-size: 28px; font-weight: 700;
+  color: var(--navy); line-height: 1;
+  font-family: 'DM Mono', monospace;
+}
+.stat-lbl {
+  font-size: 12px; color: var(--slate);
+  font-weight: 500; margin-top: 4px;
+}
+
+/* ── WELCOME BANNER ── */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, #1E3A8A 100%);
+  border-radius: var(--radius);
+  padding: 20px;
+  color: var(--white);
+  margin-bottom: 16px;
+  position: relative; overflow: hidden;
+}
+.welcome-banner::after {
+  content: '🌴';
+  position: absolute; right: 20px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 48px; opacity: .15;
+}
+.welcome-name {
+  font-size: 18px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.welcome-date {
+  font-size: 13px; opacity: .7;
+}
+
+/* ── REQUEST LIST ── */
+.request-item {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  background: var(--white);
+  transition: border-color .18s;
+}
+.request-item:last-child { margin-bottom: 0; }
+.request-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; margin-bottom: 8px;
+}
+.request-type {
+  font-weight: 600; font-size: 15px;
+  color: var(--navy);
+}
+.request-ref {
+  font-size: 11px; color: var(--slate);
+  font-family: 'DM Mono', monospace;
+  margin-top: 2px;
+}
+.request-dates {
+  font-size: 13px; color: var(--slate);
+  margin-top: 6px;
+}
+.request-reason {
+  font-size: 13px; color: var(--slate);
+  margin-top: 4px; font-style: italic;
+}
+.request-comment {
+  font-size: 13px; color: var(--slate);
+  margin-top: 6px; padding: 8px 12px;
+  background: var(--bg); border-radius: 8px;
+}
+
+/* ── STATUS BADGES ── */
+.badge {
+  display: inline-flex; align-items: center;
+  gap: 4px; padding: 4px 10px;
+  border-radius: 100px; font-size: 12px;
+  font-weight: 600;
+}
+.badge-pending  { background: var(--amber-lt); color: var(--amber); }
+.badge-approved { background: var(--green-lt); color: var(--green); }
+.badge-rejected { background: var(--red-lt);   color: var(--red); }
+.badge-cancelled{ background: var(--bg);       color: var(--slate); }
+
+/* ── BALANCE TABLE ── */
+.balance-row {
+  display: flex; justify-content: space-between;
+  align-items: center; padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.balance-row:last-child { border-bottom: none; }
+.balance-type { font-weight: 600; font-size: 14px; }
+.balance-days { font-family: 'DM Mono', monospace; }
+.balance-nums {
+  display: flex; gap: 16px; align-items: center;
+}
+.balance-num { text-align: center; }
+.balance-num .n {
+  font-size: 18px; font-weight: 700;
+  font-family: 'DM Mono', monospace;
+}
+.balance-num .l {
+  font-size: 10px; color: var(--slate);
+  text-transform: uppercase; letter-spacing: .3px;
+}
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--slate);
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-text { font-size: 15px; font-weight: 500; }
+.empty-sub  { font-size: 13px; margin-top: 4px; }
+
+/* ── LOADING ── */
+.loader {
+  display: flex; align-items: center;
+  justify-content: center; gap: 8px;
+  padding: 32px; color: var(--slate);
+  font-size: 14px;
+}
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── FILE UPLOAD ── */
+.file-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 24px; text-align: center;
+  cursor: pointer; transition: all .18s;
+  position: relative;
+}
+.file-zone:hover { border-color: var(--blue); background: var(--blue-lt); }
+.file-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.file-zone-icon { font-size: 28px; margin-bottom: 8px; }
+.file-zone-text { font-size: 13px; color: var(--slate); }
+.file-name {
+  font-size: 13px; color: var(--green);
+  font-weight: 500; margin-top: 8px;
+}
+
+/* ── DATE ROW ── */
+.date-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.days-display {
+  background: var(--blue-lt); border-radius: 10px;
+  padding: 14px; text-align: center;
+  margin-bottom: 16px;
+}
+.days-display .d {
+  font-size: 32px; font-weight: 700;
+  color: var(--blue); font-family: 'DM Mono', monospace;
+}
+.days-display .l { font-size: 12px; color: var(--slate); margin-top: 2px; }
+
+/* ── RESPONSIVE ── */
+@media (min-width: 640px) {
+  #loginScreen { background: linear-gradient(135deg, #0F1428 0%, #1E3A8A 100%); }
+  .page { max-width: 640px; margin: 0 auto; padding: 24px 24px 100px; }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ── ANIMATIONS ── */
+.fade-in { animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════════════════════════════════ -->
+<div id="loginScreen" class="screen">
+  <div class="login-card">
+    <div class="login-logo">🏢</div>
+    <div class="login-title">Employee Portal</div>
+    <div class="login-sub">URIX HRMS · Access Bank Liberia</div>
+
+    <div id="loginAlert" class="alert"></div>
+
+    <div class="field">
+      <label>Work Email</label>
+      <input type="email" id="loginEmail" placeholder="you@company.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">
+      Sign In
+    </button>
+
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--slate);">
+      Forgot your password? Contact HR.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     APP SCREEN
+═══════════════════════════════════════════════════════════ -->
+<div id="appScreen" class="screen">
+
+  <!-- Header -->
+  <div class="app-header">
+    <div class="app-header-left">
+      <div class="app-logo">🏢</div>
+      <div>
+        <div class="app-title">URIX Employee Portal</div>
+        <div class="app-user" id="headerUser">Loading...</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+  </div>
+
+  <!-- Pages -->
+  <div style="flex:1">
+
+    <!-- ── HOME ── -->
+    <div id="pageHome" class="page active">
+      <div class="welcome-banner">
+        <div class="welcome-name" id="welcomeName">Good morning!</div>
+        <div class="welcome-date" id="welcomeDate"></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-val" id="statRemaining">—</div>
+          <div class="stat-lbl">Days Available</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-val" id="statPending">—</div>
+          <div class="stat-lbl">Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="statApproved">—</div>
+          <div class="stat-lbl">Approved</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-val" id="statUsed">—</div>
+          <div class="stat-lbl">Days Used</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Quick Actions</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-success btn-full" onclick="showPage('pageApply')">
+            ✍️ Apply for Leave
+          </button>
+          <button class="btn btn-ghost btn-full" onclick="showPage('pageHistory')">
+            📋 View My Requests
+          </button>
+          <button class="btn btn-ghost btn-full" onclick="showPage('pageBalance')">
+            📊 Check Leave Balance
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent request -->
+      <div class="card">
+        <div class="card-title">Latest Request</div>
+        <div id="latestRequest"><div class="loader"><div class="spinner"></div> Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ── APPLY ── -->
+    <div id="pageApply" class="page">
+      <div class="page-title">Apply for Leave</div>
+      <div class="page-sub">Fill in the form below to submit your leave request.</div>
+
+      <div id="applyAlert" class="alert"></div>
+
+      <div class="card">
+        <div class="field">
+          <label>Leave Type *</label>
+          <select id="applyType">
+            <option value="">Select leave type...</option>
+          </select>
+        </div>
+
+        <div class="date-row">
+          <div class="field">
+            <label>Start Date *</label>
+            <input type="date" id="applyStart" oninput="calcDays()">
+          </div>
+          <div class="field">
+            <label>End Date *</label>
+            <input type="date" id="applyEnd" oninput="calcDays()">
+          </div>
+        </div>
+
+        <div class="days-display" id="daysDisplay">
+          <div class="d" id="daysCount">—</div>
+          <div class="l">Calendar Days</div>
+        </div>
+
+        <div class="field">
+          <label>Reason *</label>
+          <textarea id="applyReason" placeholder="Briefly describe why you are applying for leave..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Supporting Document <span style="color:var(--slate)">(optional)</span></label>
+          <div class="file-zone" id="fileZone">
+            <input type="file" id="applyFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+              onchange="handleFile(this)">
+            <div class="file-zone-icon">📎</div>
+            <div class="file-zone-text">Tap to attach document (PDF, image, Word)</div>
+            <div class="file-name" id="fileName"></div>
+          </div>
+        </div>
+
+        <button class="btn btn-success btn-full" id="submitBtn" onclick="submitLeave()">
+          ✅ Submit Leave Request
+        </button>
+      </div>
+    </div>
+
+    <!-- ── HISTORY ── -->
+    <div id="pageHistory" class="page">
+      <div class="page-title">My Requests</div>
+      <div class="page-sub">All your leave requests and their current status.</div>
+
+      <div id="historyList">
+        <div class="loader"><div class="spinner"></div> Loading...</div>
+      </div>
+    </div>
+
+    <!-- ── BALANCE ── -->
+    <div id="pageBalance" class="page">
+      <div class="page-title">Leave Balance</div>
+      <div class="page-sub" id="balanceYear">Current year</div>
+
+      <div id="balanceList">
+        <div class="loader"><div class="spinner"></div> Loading...</div>
+      </div>
+    </div>
+
+  </div><!-- /pages -->
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-item active" id="navHome" onclick="showPage('pageHome')">
+      <span class="nav-icon">🏠</span>Home
+    </button>
+    <button class="nav-item" id="navApply" onclick="showPage('pageApply')">
+      <span class="nav-icon">✍️</span>Apply
+    </button>
+    <button class="nav-item" id="navHistory" onclick="showPage('pageHistory')">
+      <span class="nav-icon">📋</span>Requests
+    </button>
+    <button class="nav-item" id="navBalance" onclick="showPage('pageBalance')">
+      <span class="nav-icon">📊</span>Balance
+    </button>
+  </div>
+
+</div><!-- /appScreen -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// SUPABASE INIT
+// ═══════════════════════════════════════════════════════════════
+const SUPABASE_URL  = 'https://cxzdwqzjtacwbntnlxsj.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emR3cXpqdGFjd2JudG5seHNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MzU2MTcsImV4cCI6MjA5NjQxMTYxN30.Oy7tpOUMf8o8oGngNQXG7ChlrGfZNO7aDPwf11Q4V5A';
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let currentUser    = null;
+let currentEmployee= null;
+let leaveTypes     = [];
+let balances       = [];
+let requests       = [];
+
+// ═══════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  setDefaultDates();
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadEmployee();
+    showApp();
+  } else {
+    showScreen('loginScreen');
+  }
+
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      currentUser = session.user;
+      await loadEmployee();
+      showApp();
+    } else if (event === 'SIGNED_OUT') {
+      showScreen('loginScreen');
+    }
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════
+async function doLogin() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn      = document.getElementById('loginBtn');
+
+  if (!email || !password) {
+    showAlert('loginAlert', 'Please enter your email and password.', 'error');
+    return;
+  }
+
+  btn.disabled  = true;
+  btn.textContent = 'Signing in...';
+  hideAlert('loginAlert');
+
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    showAlert('loginAlert',
+      error.message === 'Invalid login credentials'
+        ? 'Incorrect email or password. Please try again.'
+        : error.message,
+      'error');
+    btn.disabled  = false;
+    btn.textContent = 'Sign In';
+  }
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser     = null;
+  currentEmployee = null;
+  leaveTypes      = [];
+  balances        = [];
+  requests        = [];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOAD EMPLOYEE PROFILE
+// ═══════════════════════════════════════════════════════════════
+async function loadEmployee() {
+  const { data } = await sb
+    .from('employee_auth')
+    .select('employee_id, employees(id,employee_code,full_name,department,position)')
+    .eq('auth_user_id', currentUser.id)
+    .single();
+
+  if (data?.employees) {
+    currentEmployee = data.employees;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SHOW APP
+// ═══════════════════════════════════════════════════════════════
+async function showApp() {
+  showScreen('appScreen');
+
+  const name = currentEmployee?.full_name || currentUser.email;
+  const dept = currentEmployee?.department || '';
+
+  document.getElementById('headerUser').textContent =
+    dept ? `${name} · ${dept}` : name;
+  document.getElementById('welcomeName').textContent =
+    `${getGreeting()}, ${firstName(name)}! 👋`;
+  document.getElementById('welcomeDate').textContent =
+    new Date().toLocaleDateString('en-LR', {
+      weekday:'long', year:'numeric', month:'long', day:'numeric'
+    });
+
+  await Promise.all([loadLeaveTypes(), loadBalances(), loadRequests()]);
+  renderHome();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DATA LOADERS
+// ═══════════════════════════════════════════════════════════════
+async function loadLeaveTypes() {
+  const { data } = await sb.from('leave_types').select('*').order('name');
+  leaveTypes = data || [];
+
+  const sel = document.getElementById('applyType');
+  sel.innerHTML = '<option value="">Select leave type...</option>';
+  leaveTypes.forEach(lt => {
+    sel.innerHTML += `<option value="${lt.id}">${lt.name}</option>`;
+  });
+}
+
+async function loadBalances() {
+  if (!currentEmployee) return;
+  const year = new Date().getFullYear();
+  const { data } = await sb
+    .from('leave_balances')
+    .select('*')
+    .eq('employee_id', currentEmployee.id)
+    .eq('year_applicable', year);
+  balances = data || [];
+}
+
+async function loadRequests() {
+  if (!currentEmployee) return;
+  const { data } = await sb
+    .from('leave_requests')
+    .select('*')
+    .eq('employee_id', currentEmployee.id)
+    .order('submitted_at', { ascending: false });
+  requests = data || [];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER HOME
+// ═══════════════════════════════════════════════════════════════
+function renderHome() {
+  // Stats
+  const totalRemaining = balances.reduce((s,b) => s + (b.remaining_days||0), 0);
+  const totalUsed      = balances.reduce((s,b) => s + (b.used_days||0), 0);
+  const pending  = requests.filter(r => r.status === 'Pending').length;
+  const approved = requests.filter(r => r.status === 'Approved').length;
+
+  document.getElementById('statRemaining').textContent = totalRemaining.toFixed(1);
+  document.getElementById('statPending').textContent   = pending;
+  document.getElementById('statApproved').textContent  = approved;
+  document.getElementById('statUsed').textContent      = totalUsed.toFixed(1);
+
+  // Latest request
+  const latest = requests[0];
+  const el = document.getElementById('latestRequest');
+  if (!latest) {
+    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">No requests yet</div>
+        <div class="empty-sub">Your latest leave request will appear here</div>
+      </div>`;
+  } else {
+    el.innerHTML = buildRequestHTML(latest);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER HISTORY
+// ═══════════════════════════════════════════════════════════════
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (!requests.length) {
+    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">No leave requests yet</div>
+        <div class="empty-sub">Your submitted requests will appear here</div>
+      </div>`;
+    return;
+  }
+  el.innerHTML = requests.map(buildRequestHTML).join('');
+}
+
+function buildRequestHTML(r) {
+  const badge  = badgeHTML(r.status);
+  const start  = fmtDate(r.start_date);
+  const end    = fmtDate(r.end_date);
+  const sub    = fmtDateTime(r.submitted_at);
+  const comment = r.approval_comments
+    ? `<div class="request-comment">💬 ${r.approval_comments}</div>`
+    : '';
+
+  return `
+    <div class="request-item fade-in">
+      <div class="request-header">
+        <div>
+          <div class="request-type">${r.leave_type_name}</div>
+          <div class="request-ref">${r.reference_no || 'Pending sync'}</div>
+        </div>
+        ${badge}
+      </div>
+      <div class="request-dates">📅 ${start} → ${end} &nbsp;·&nbsp; ${r.total_days} day(s)</div>
+      <div class="request-reason">"${r.reason}"</div>
+      ${comment}
+      <div style="font-size:11px;color:var(--slate);margin-top:8px">Submitted ${sub}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER BALANCE
+// ═══════════════════════════════════════════════════════════════
+function renderBalance() {
+  const year = new Date().getFullYear();
+  document.getElementById('balanceYear').textContent = `Leave balances for ${year}`;
+  const el = document.getElementById('balanceList');
+
+  if (!balances.length) {
+    el.innerHTML = `
+      <div class="card">
+        <div class="empty">
+          <div class="empty-icon">📊</div>
+          <div class="empty-text">No balance data</div>
+          <div class="empty-sub">Your balances will appear after HR initializes them</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="card">` +
+    balances.map(b => `
+      <div class="balance-row">
+        <div>
+          <div class="balance-type">${b.leave_type_name}</div>
+          <div style="font-size:12px;color:var(--slate)">${b.allocated_days} allocated</div>
+        </div>
+        <div class="balance-nums">
+          <div class="balance-num">
+            <div class="n" style="color:var(--amber)">${b.pending_days}</div>
+            <div class="l">Pending</div>
+          </div>
+          <div class="balance-num">
+            <div class="n" style="color:var(--slate)">${b.used_days}</div>
+            <div class="l">Used</div>
+          </div>
+          <div class="balance-num">
+            <div class="n" style="color:var(--green)">${b.remaining_days}</div>
+            <div class="l">Left</div>
+          </div>
+        </div>
+      </div>`
+    ).join('') + `</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SUBMIT LEAVE
+// ═══════════════════════════════════════════════════════════════
+async function submitLeave() {
+  hideAlert('applyAlert');
+
+  const typeId  = document.getElementById('applyType').value;
+  const start   = document.getElementById('applyStart').value;
+  const end     = document.getElementById('applyEnd').value;
+  const reason  = document.getElementById('applyReason').value.trim();
+  const file    = document.getElementById('applyFile').files[0];
+
+  if (!typeId || !start || !end || !reason) {
+    showAlert('applyAlert', 'Please fill in all required fields.', 'error');
+    return;
+  }
+
+  const startD = new Date(start);
+  const endD   = new Date(end);
+  if (endD < startD) {
+    showAlert('applyAlert', 'End date cannot be before start date.', 'error');
+    return;
+  }
+
+  const days = Math.round((endD - startD) / 86400000) + 1;
+  const lt   = leaveTypes.find(t => t.id == typeId);
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled    = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    // Upload attachment if provided
+    let attachmentUrl = null;
+    if (file) {
+      const path = `${currentEmployee.id}/${Date.now()}_${file.name}`;
+      const { error: uploadErr } = await sb.storage
+        .from('leave-attachments').upload(path, file);
+      if (!uploadErr) {
+        const { data: urlData } = sb.storage
+          .from('leave-attachments').getPublicUrl(path);
+        attachmentUrl = urlData?.publicUrl;
+      }
+    }
+
+    // Generate reference number
+    const refNo = `LV-${new Date().toISOString().slice(0,7).replace('-','')}-${Math.floor(Math.random()*9000)+1000}`;
+
+    // Insert request
+    const { error } = await sb.from('leave_requests').insert({
+      reference_no:   refNo,
+      employee_id:    currentEmployee.id,
+      employee_code:  currentEmployee.employee_code,
+      leave_type_id:  typeId,
+      leave_type_name: lt.name,
+      start_date:     start,
+      end_date:       end,
+      total_days:     days,
+      reason:         reason,
+      attachment_url: attachmentUrl,
+      status:         'Pending',
+      synced_to_local: false
+    });
+
+    if (error) throw error;
+
+    showAlert('applyAlert',
+      `✅ Leave request submitted!\n\nReference: ${refNo}\nStatus: Pending approval`,
+      'success');
+
+    // Reset form
+    document.getElementById('applyType').value    = '';
+    document.getElementById('applyStart').value   = '';
+    document.getElementById('applyEnd').value     = '';
+    document.getElementById('applyReason').value  = '';
+    document.getElementById('applyFile').value    = '';
+    document.getElementById('fileName').textContent = '';
+    document.getElementById('daysCount').textContent = '—';
+
+    // Refresh data
+    await loadRequests();
+    renderHome();
+
+  } catch (err) {
+    showAlert('applyAlert', `Failed to submit: ${err.message}`, 'error');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = '✅ Submit Leave Request';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById(pageId).classList.add('active');
+
+  const navMap = {
+    pageHome:    'navHome',
+    pageApply:   'navApply',
+    pageHistory: 'navHistory',
+    pageBalance: 'navBalance'
+  };
+  const nav = document.getElementById(navMap[pageId]);
+  if (nav) nav.classList.add('active');
+
+  window.scrollTo(0, 0);
+
+  if (pageId === 'pageHistory') renderHistory();
+  if (pageId === 'pageBalance') renderBalance();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function calcDays() {
+  const s = document.getElementById('applyStart').value;
+  const e = document.getElementById('applyEnd').value;
+  if (s && e) {
+    const d = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+    document.getElementById('daysCount').textContent = d > 0 ? d : '—';
+  }
+}
+
+function handleFile(input) {
+  const f = input.files[0];
+  document.getElementById('fileName').textContent = f ? `📎 ${f.name}` : '';
+}
+
+function setDefaultDates() {
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('applyStart').value = today;
+  document.getElementById('applyEnd').value   = today;
+  document.getElementById('daysCount').textContent = '1';
+}
+
+function badgeHTML(status) {
+  const map = {
+    Pending:   ['badge-pending',  '⏳'],
+    Approved:  ['badge-approved', '✅'],
+    Rejected:  ['badge-rejected', '❌'],
+    Cancelled: ['badge-cancelled','—']
+  };
+  const [cls, icon] = map[status] || ['badge-pending','⏳'];
+  return `<span class="badge ${cls}">${icon} ${status}</span>`;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', {
+    day:'2-digit', month:'short', year:'numeric'
+  });
+}
+
+function fmtDateTime(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB', {
+    day:'2-digit', month:'short', year:'numeric'
+  });
+}
+
+function firstName(name) {
+  return name?.split(' ')[0] || 'there';
+}
+
+function getGreeting() {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+
+function showAlert(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className   = `alert alert-${type} show`;
+}
+
+function hideAlert(id) {
+  document.getElementById(id).className = 'alert';
+}
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').classList.contains('active')) {
+    doLogin();
+  }
+});
+</script>
+</body>
+</html>
