@@ -9,371 +9,185 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --navy:    #0F1428;
-  --blue:    #2563EB;
-  --blue-lt: #EFF6FF;
-  --green:   #16A34A;
-  --green-lt:#F0FDF4;
-  --amber:   #D97706;
-  --amber-lt:#FFFBEB;
-  --red:     #DC2626;
-  --red-lt:  #FEF2F2;
-  --slate:   #64748B;
-  --border:  #E2E8F0;
-  --bg:      #F8FAFC;
-  --white:   #FFFFFF;
-  --text:    #1E293B;
-  --radius:  12px;
-  --shadow:  0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+  --navy:#0F1428; --blue:#2563EB; --blue-lt:#EFF6FF;
+  --green:#16A34A; --green-lt:#F0FDF4;
+  --amber:#D97706; --amber-lt:#FFFBEB;
+  --red:#DC2626; --red-lt:#FEF2F2;
+  --slate:#64748B; --border:#E2E8F0;
+  --bg:#F8FAFC; --white:#FFFFFF; --text:#1E293B;
+  --radius:12px; --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
 }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; font-size:15px; -webkit-font-smoothing:antialiased; }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 15px;
-  -webkit-font-smoothing: antialiased;
-}
+.screen { display:none; min-height:100vh; }
+.screen.active { display:flex; flex-direction:column; }
 
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: flex; flex-direction: column; }
-
-/* ── AUTH SCREENS (login + set password) ── */
 #loginScreen, #setPasswordScreen {
-  background: var(--navy);
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  background:var(--navy); align-items:center; justify-content:center; padding:24px;
 }
-
 .auth-card {
-  background: var(--white);
-  border-radius: 20px;
-  padding: 40px 32px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 24px 64px rgba(0,0,0,.3);
+  background:var(--white); border-radius:20px; padding:40px 32px;
+  width:100%; max-width:400px; box-shadow:0 24px 64px rgba(0,0,0,.3);
 }
-
 .auth-logo {
-  width: 56px; height: 56px;
-  background: var(--navy);
-  border-radius: 14px;
-  display: flex; align-items: center;
-  justify-content: center;
-  font-size: 24px; margin-bottom: 20px;
+  width:56px; height:56px; background:var(--navy); border-radius:14px;
+  display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:20px;
 }
+.auth-title { font-size:22px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+.auth-sub   { font-size:13px; color:var(--slate); margin-bottom:28px; }
 
-.auth-title {
-  font-size: 22px; font-weight: 700;
-  color: var(--navy); margin-bottom: 4px;
-}
-
-.auth-sub {
-  font-size: 13px; color: var(--slate);
-  margin-bottom: 32px;
-}
-
-.password-rules {
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  font-size: 12px;
-  color: var(--slate);
-  line-height: 1.8;
-}
-
-/* ── FORM ELEMENTS ── */
-.field { margin-bottom: 16px; }
-.field label {
-  display: block; font-size: 13px;
-  font-weight: 600; color: var(--text);
-  margin-bottom: 6px;
-}
+.field { margin-bottom:16px; }
+.field label { display:block; font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; }
 .field input, .field select, .field textarea {
-  width: 100%; padding: 12px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  font-family: inherit; font-size: 15px;
-  color: var(--text); background: var(--white);
-  transition: border-color .2s;
-  outline: none;
+  width:100%; padding:12px 14px; border:1.5px solid var(--border);
+  border-radius:var(--radius); font-family:inherit; font-size:15px;
+  color:var(--text); background:var(--white); transition:border-color .2s; outline:none;
 }
 .field input:focus, .field select:focus, .field textarea:focus {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+  border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.1);
 }
-.field textarea { resize: vertical; min-height: 80px; }
+.field textarea { resize:vertical; min-height:80px; }
 
-/* ── BUTTONS ── */
 .btn {
-  display: inline-flex; align-items: center;
-  justify-content: center; gap: 8px;
-  padding: 12px 20px; border-radius: var(--radius);
-  font-family: inherit; font-size: 15px;
-  font-weight: 600; border: none;
-  cursor: pointer; transition: all .18s;
-  text-decoration: none; white-space: nowrap;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 20px; border-radius:var(--radius); font-family:inherit;
+  font-size:15px; font-weight:600; border:none; cursor:pointer; transition:all .18s;
+  white-space:nowrap;
 }
-.btn-primary {
-  background: var(--blue); color: var(--white);
-  width: 100%; padding: 14px;
-}
-.btn-primary:hover { background: #1D4ED8; }
-.btn-primary:disabled { background: var(--slate); cursor: not-allowed; }
-.btn-success { background: var(--green); color: var(--white); }
-.btn-success:hover { background: #15803D; }
-.btn-danger { background: var(--red-lt); color: var(--red); }
-.btn-ghost { background: transparent; color: var(--slate); border: 1.5px solid var(--border); }
-.btn-ghost:hover { background: var(--bg); }
-.btn-full { width: 100%; }
+.btn-primary { background:var(--blue); color:var(--white); width:100%; padding:14px; }
+.btn-primary:hover { background:#1D4ED8; }
+.btn-primary:disabled { background:var(--slate); cursor:not-allowed; }
+.btn-success { background:var(--green); color:var(--white); }
+.btn-success:hover { background:#15803D; }
+.btn-ghost { background:transparent; color:var(--slate); border:1.5px solid var(--border); }
+.btn-ghost:hover { background:var(--bg); }
+.btn-full { width:100%; }
 
-/* ── ALERT ── */
-.alert {
-  padding: 12px 16px; border-radius: 10px;
-  font-size: 13px; font-weight: 500;
-  margin-bottom: 16px; display: none;
-}
-.alert.show { display: block; }
-.alert-error   { background: var(--red-lt);   color: var(--red); }
-.alert-success { background: var(--green-lt); color: var(--green); }
-.alert-warning { background: var(--amber-lt); color: var(--amber); }
+.alert { padding:12px 16px; border-radius:10px; font-size:13px; font-weight:500; margin-bottom:16px; display:none; }
+.alert.show { display:block; }
+.alert-error   { background:var(--red-lt);   color:var(--red); }
+.alert-success { background:var(--green-lt); color:var(--green); }
+.alert-warning { background:var(--amber-lt); color:var(--amber); }
 
-/* ── APP LAYOUT ── */
-#appScreen { background: var(--bg); }
-.app-header {
-  background: var(--navy);
-  padding: 16px 20px;
-  display: flex; align-items: center;
-  justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-}
-.app-header-left { display: flex; align-items: center; gap: 12px; }
-.app-logo {
-  width: 36px; height: 36px;
-  background: rgba(255,255,255,.1);
-  border-radius: 10px;
-  display: flex; align-items: center;
-  justify-content: center; font-size: 18px;
-}
-.app-title  { color: var(--white); font-weight: 700; font-size: 16px; }
-.app-user   { font-size: 12px; color: rgba(255,255,255,.6); }
-.btn-logout {
-  background: rgba(255,255,255,.1);
-  border: none; color: var(--white);
-  padding: 8px 14px; border-radius: 8px;
-  font-family: inherit; font-size: 13px;
-  font-weight: 600; cursor: pointer;
-}
-.btn-logout:hover { background: rgba(255,255,255,.2); }
+.pw-rules { background:var(--bg); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:13px; color:var(--slate); }
+.strength-bar  { height:4px; border-radius:2px; background:var(--border); margin-top:8px; overflow:hidden; }
+.strength-fill { height:100%; border-radius:2px; transition:width .3s,background .3s; width:0; }
 
-/* ── BOTTOM NAV ── */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--white);
-  border-top: 1px solid var(--border);
-  display: flex; z-index: 100;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+/* Loading overlay */
+#loadingOverlay {
+  position:fixed; inset:0; background:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:16px; z-index:999;
 }
-.nav-item {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 10px 4px 8px;
-  cursor: pointer; border: none; background: none;
-  font-family: inherit; color: var(--slate);
-  font-size: 10px; font-weight: 500;
-  gap: 4px; transition: color .18s;
-}
-.nav-item.active { color: var(--blue); }
-.nav-item .nav-icon { font-size: 20px; line-height: 1; }
+.load-logo { font-size:48px; }
+.load-text  { color:rgba(255,255,255,.7); font-size:15px; }
+.load-spin  { width:32px; height:32px; border:3px solid rgba(255,255,255,.2); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
 
-/* ── PAGE CONTENT ── */
-.page { display: none; padding: 20px 16px 100px; }
-.page.active { display: block; }
-.page-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-.page-sub   { font-size: 13px; color: var(--slate); margin-bottom: 20px; }
+/* App */
+#appScreen { background:var(--bg); }
+.app-header { background:var(--navy); padding:16px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.app-header-left { display:flex; align-items:center; gap:12px; }
+.app-logo { width:36px; height:36px; background:rgba(255,255,255,.1); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.app-title { color:var(--white); font-weight:700; font-size:16px; }
+.app-user  { font-size:12px; color:rgba(255,255,255,.6); }
+.btn-logout { background:rgba(255,255,255,.1); border:none; color:var(--white); padding:8px 14px; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.btn-logout:hover { background:rgba(255,255,255,.2); }
 
-/* ── CARDS ── */
-.card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: var(--shadow);
-  margin-bottom: 16px;
-}
-.card-title {
-  font-size: 13px; font-weight: 600;
-  color: var(--slate); text-transform: uppercase;
-  letter-spacing: .5px; margin-bottom: 12px;
-}
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--white); border-top:1px solid var(--border); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom,0); }
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 4px 8px; cursor:pointer; border:none; background:none; font-family:inherit; color:var(--slate); font-size:10px; font-weight:500; gap:4px; transition:color .18s; }
+.nav-item.active { color:var(--blue); }
+.nav-item .nav-icon { font-size:20px; line-height:1; }
 
-/* ── STAT CARDS ── */
-.stats-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 12px; margin-bottom: 16px;
-}
-.stat-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 16px; box-shadow: var(--shadow);
-  border-left: 4px solid var(--blue);
-}
-.stat-card.green { border-color: var(--green); }
-.stat-card.amber { border-color: var(--amber); }
-.stat-card.red   { border-color: var(--red); }
-.stat-val {
-  font-size: 28px; font-weight: 700;
-  color: var(--navy); line-height: 1;
-  font-family: 'DM Mono', monospace;
-}
-.stat-lbl { font-size: 12px; color: var(--slate); font-weight: 500; margin-top: 4px; }
+.page { display:none; padding:20px 16px 100px; }
+.page.active { display:block; }
+.page-title { font-size:20px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+.page-sub   { font-size:13px; color:var(--slate); margin-bottom:20px; }
 
-/* ── WELCOME BANNER ── */
-.welcome-banner {
-  background: linear-gradient(135deg, var(--navy) 0%, #1E3A8A 100%);
-  border-radius: var(--radius);
-  padding: 20px; color: var(--white);
-  margin-bottom: 16px;
-  position: relative; overflow: hidden;
-}
-.welcome-banner::after {
-  content: '🌴';
-  position: absolute; right: 20px; top: 50%;
-  transform: translateY(-50%);
-  font-size: 48px; opacity: .15;
-}
-.welcome-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-.welcome-date { font-size: 13px; opacity: .7; }
+.card { background:var(--white); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); margin-bottom:16px; }
+.card-title { font-size:13px; font-weight:600; color:var(--slate); text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px; }
 
-/* ── REQUEST LIST ── */
-.request-item {
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px; margin-bottom: 10px;
-  background: var(--white);
-}
-.request-item:last-child { margin-bottom: 0; }
-.request-header {
-  display: flex; justify-content: space-between;
-  align-items: flex-start; margin-bottom: 8px;
-}
-.request-type { font-weight: 600; font-size: 15px; color: var(--navy); }
-.request-ref  { font-size: 11px; color: var(--slate); font-family: 'DM Mono', monospace; margin-top: 2px; }
-.request-dates { font-size: 13px; color: var(--slate); margin-top: 6px; }
-.request-reason { font-size: 13px; color: var(--slate); margin-top: 4px; font-style: italic; }
-.request-comment {
-  font-size: 13px; color: var(--slate);
-  margin-top: 6px; padding: 8px 12px;
-  background: var(--bg); border-radius: 8px;
-}
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.stat-card { background:var(--white); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); border-left:4px solid var(--blue); }
+.stat-card.green { border-color:var(--green); }
+.stat-card.amber { border-color:var(--amber); }
+.stat-card.red   { border-color:var(--red); }
+.stat-val { font-size:28px; font-weight:700; color:var(--navy); line-height:1; font-family:'DM Mono',monospace; }
+.stat-lbl { font-size:12px; color:var(--slate); font-weight:500; margin-top:4px; }
 
-/* ── STATUS BADGES ── */
-.badge {
-  display: inline-flex; align-items: center;
-  gap: 4px; padding: 4px 10px;
-  border-radius: 100px; font-size: 12px; font-weight: 600;
-}
-.badge-pending   { background: var(--amber-lt); color: var(--amber); }
-.badge-approved  { background: var(--green-lt); color: var(--green); }
-.badge-rejected  { background: var(--red-lt);   color: var(--red); }
-.badge-cancelled { background: var(--bg);       color: var(--slate); }
+.welcome-banner { background:linear-gradient(135deg,var(--navy) 0%,#1E3A8A 100%); border-radius:var(--radius); padding:20px; color:var(--white); margin-bottom:16px; position:relative; overflow:hidden; }
+.welcome-banner::after { content:'🌴'; position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:48px; opacity:.15; }
+.welcome-name { font-size:18px; font-weight:700; margin-bottom:4px; }
+.welcome-date { font-size:13px; opacity:.7; }
 
-/* ── BALANCE TABLE ── */
-.balance-row {
-  display: flex; justify-content: space-between;
-  align-items: center; padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-}
-.balance-row:last-child { border-bottom: none; }
-.balance-type { font-weight: 600; font-size: 14px; }
-.balance-nums { display: flex; gap: 16px; align-items: center; }
-.balance-num  { text-align: center; }
-.balance-num .n { font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; }
-.balance-num .l { font-size: 10px; color: var(--slate); text-transform: uppercase; letter-spacing: .3px; }
+.request-item { border:1.5px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:10px; background:var(--white); }
+.request-item:last-child { margin-bottom:0; }
+.request-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.request-type { font-weight:600; font-size:15px; color:var(--navy); }
+.request-ref  { font-size:11px; color:var(--slate); font-family:'DM Mono',monospace; margin-top:2px; }
+.request-dates  { font-size:13px; color:var(--slate); margin-top:6px; }
+.request-reason { font-size:13px; color:var(--slate); margin-top:4px; font-style:italic; }
+.request-comment { font-size:13px; color:var(--slate); margin-top:6px; padding:8px 12px; background:var(--bg); border-radius:8px; }
 
-/* ── EMPTY STATE ── */
-.empty { text-align: center; padding: 40px 20px; color: var(--slate); }
-.empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-text { font-size: 15px; font-weight: 500; }
-.empty-sub  { font-size: 13px; margin-top: 4px; }
+.badge { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:100px; font-size:12px; font-weight:600; }
+.badge-pending   { background:var(--amber-lt); color:var(--amber); }
+.badge-approved  { background:var(--green-lt); color:var(--green); }
+.badge-rejected  { background:var(--red-lt);   color:var(--red); }
+.badge-cancelled { background:var(--bg);       color:var(--slate); }
 
-/* ── LOADING ── */
-.loader {
-  display: flex; align-items: center;
-  justify-content: center; gap: 8px;
-  padding: 32px; color: var(--slate); font-size: 14px;
-}
-.spinner {
-  width: 20px; height: 20px;
-  border: 2px solid var(--border);
-  border-top-color: var(--blue);
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+.balance-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--border); }
+.balance-row:last-child { border-bottom:none; }
+.balance-type { font-weight:600; font-size:14px; }
+.balance-nums { display:flex; gap:16px; align-items:center; }
+.balance-num  { text-align:center; }
+.balance-num .n { font-size:18px; font-weight:700; font-family:'DM Mono',monospace; }
+.balance-num .l { font-size:10px; color:var(--slate); text-transform:uppercase; letter-spacing:.3px; }
 
-/* ── FILE UPLOAD ── */
-.file-zone {
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 24px; text-align: center;
-  cursor: pointer; transition: all .18s;
-  position: relative;
-}
-.file-zone:hover { border-color: var(--blue); background: var(--blue-lt); }
-.file-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.file-zone-icon { font-size: 28px; margin-bottom: 8px; }
-.file-zone-text { font-size: 13px; color: var(--slate); }
-.file-name      { font-size: 13px; color: var(--green); font-weight: 500; margin-top: 8px; }
+.empty { text-align:center; padding:40px 20px; color:var(--slate); }
+.empty-icon { font-size:48px; margin-bottom:12px; }
+.empty-text { font-size:15px; font-weight:500; }
+.empty-sub  { font-size:13px; margin-top:4px; }
 
-/* ── DATE ROW ── */
-.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.days-display {
-  background: var(--blue-lt); border-radius: 10px;
-  padding: 14px; text-align: center; margin-bottom: 16px;
-}
-.days-display .d {
-  font-size: 32px; font-weight: 700;
-  color: var(--blue); font-family: 'DM Mono', monospace;
-}
-.days-display .l { font-size: 12px; color: var(--slate); margin-top: 2px; }
+.loader { display:flex; align-items:center; justify-content:center; gap:8px; padding:32px; color:var(--slate); font-size:14px; }
+.spinner { width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-/* ── STRENGTH BAR ── */
-.strength-bar {
-  height: 4px; border-radius: 2px;
-  background: var(--border); margin-top: 8px;
-  overflow: hidden;
-}
-.strength-fill {
-  height: 100%; border-radius: 2px;
-  transition: width .3s, background .3s;
-  width: 0%;
-}
+.file-zone { border:2px dashed var(--border); border-radius:var(--radius); padding:24px; text-align:center; cursor:pointer; transition:all .18s; position:relative; }
+.file-zone:hover { border-color:var(--blue); background:var(--blue-lt); }
+.file-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.file-zone-icon { font-size:28px; margin-bottom:8px; }
+.file-zone-text { font-size:13px; color:var(--slate); }
+.file-name      { font-size:13px; color:var(--green); font-weight:500; margin-top:8px; }
 
-@media (min-width: 640px) {
-  #loginScreen, #setPasswordScreen {
-    background: linear-gradient(135deg, #0F1428 0%, #1E3A8A 100%);
-  }
-  .page { max-width: 640px; margin: 0 auto; padding: 24px 24px 100px; }
-  .stats-grid { grid-template-columns: repeat(4, 1fr); }
-}
+.date-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.days-display { background:var(--blue-lt); border-radius:10px; padding:14px; text-align:center; margin-bottom:16px; }
+.days-display .d { font-size:32px; font-weight:700; color:var(--blue); font-family:'DM Mono',monospace; }
+.days-display .l { font-size:12px; color:var(--slate); margin-top:2px; }
 
-.fade-in { animation: fadeIn .3s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (min-width:640px) {
+  #loginScreen, #setPasswordScreen { background:linear-gradient(135deg,#0F1428 0%,#1E3A8A 100%); }
+  .page { max-width:640px; margin:0 auto; padding:24px 24px 100px; }
+  .stats-grid { grid-template-columns:repeat(4,1fr); }
+}
+.fade-in { animation:fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════ LOGIN ═══════════════════════════════ -->
+<!-- Loading overlay -->
+<div id="loadingOverlay">
+  <div class="load-logo">🏢</div>
+  <div class="load-spin"></div>
+  <div class="load-text">Loading URIX Employee Portal...</div>
+</div>
+
+<!-- LOGIN -->
 <div id="loginScreen" class="screen">
   <div class="auth-card">
     <div class="auth-logo">🏢</div>
     <div class="auth-title">Employee Portal</div>
-    <div class="auth-sub">URIX HRMS · UriX Technology</div>
+    <div class="auth-sub">URIX HRMS · Access Bank Liberia</div>
     <div id="loginAlert" class="alert"></div>
     <div class="field">
       <label>Work Email</label>
@@ -390,40 +204,31 @@ body {
   </div>
 </div>
 
-<!-- ═════════════════════════ SET PASSWORD ══════════════════════════════ -->
+<!-- SET PASSWORD -->
 <div id="setPasswordScreen" class="screen">
   <div class="auth-card">
     <div class="auth-logo">🔐</div>
     <div class="auth-title" id="setPwdTitle">Welcome to URIX Portal!</div>
-    <div class="auth-sub" id="setPwdSub">Please set your password to get started.</div>
+    <div class="auth-sub"  id="setPwdSub">Please choose a password to get started.</div>
     <div id="setPwdAlert" class="alert"></div>
-
-    <div class="password-rules">
-      Password must be at least <strong>8 characters</strong> long.
-    </div>
-
+    <div class="pw-rules">Password must be at least <strong>8 characters</strong>.</div>
     <div class="field">
       <label>New Password</label>
-      <input type="password" id="newPassword" placeholder="Enter new password"
-        oninput="checkStrength(this.value)">
-      <div class="strength-bar">
-        <div class="strength-fill" id="strengthFill"></div>
-      </div>
+      <input type="password" id="newPassword" placeholder="Enter new password" oninput="checkStrength(this.value)">
+      <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
     </div>
     <div class="field">
       <label>Confirm Password</label>
       <input type="password" id="confirmPassword" placeholder="Re-enter password">
     </div>
-
     <button class="btn btn-primary" id="setPwdBtn" onclick="doSetPassword()">
-      🔐 Set My Password
+      🔐 Set My Password &amp; Sign In
     </button>
   </div>
 </div>
 
-<!-- ══════════════════════════════ APP ══════════════════════════════════ -->
+<!-- APP -->
 <div id="appScreen" class="screen">
-
   <div class="app-header">
     <div class="app-header-left">
       <div class="app-logo">🏢</div>
@@ -434,7 +239,6 @@ body {
     </div>
     <button class="btn-logout" onclick="doLogout()">Sign Out</button>
   </div>
-
   <div style="flex:1">
 
     <!-- HOME -->
@@ -444,22 +248,10 @@ body {
         <div class="welcome-date" id="welcomeDate"></div>
       </div>
       <div class="stats-grid">
-        <div class="stat-card green">
-          <div class="stat-val" id="statRemaining">—</div>
-          <div class="stat-lbl">Days Available</div>
-        </div>
-        <div class="stat-card amber">
-          <div class="stat-val" id="statPending">—</div>
-          <div class="stat-lbl">Pending</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="statApproved">—</div>
-          <div class="stat-lbl">Approved</div>
-        </div>
-        <div class="stat-card red">
-          <div class="stat-val" id="statUsed">—</div>
-          <div class="stat-lbl">Days Used</div>
-        </div>
+        <div class="stat-card green"><div class="stat-val" id="statRemaining">—</div><div class="stat-lbl">Days Available</div></div>
+        <div class="stat-card amber"><div class="stat-val" id="statPending">—</div><div class="stat-lbl">Pending</div></div>
+        <div class="stat-card">     <div class="stat-val" id="statApproved">—</div><div class="stat-lbl">Approved</div></div>
+        <div class="stat-card red"> <div class="stat-val" id="statUsed">—</div><div class="stat-lbl">Days Used</div></div>
       </div>
       <div class="card">
         <div class="card-title">Quick Actions</div>
@@ -478,26 +270,18 @@ body {
     <!-- APPLY -->
     <div id="pageApply" class="page">
       <div class="page-title">Apply for Leave</div>
-      <div class="page-sub">Fill in the form below to submit your leave request.</div>
+      <div class="page-sub">Fill in the form to submit your request.</div>
       <div id="applyAlert" class="alert"></div>
       <div class="card">
         <div class="field">
           <label>Leave Type *</label>
-          <select id="applyType">
-            <option value="">Select leave type...</option>
-          </select>
+          <select id="applyType"><option value="">Select leave type...</option></select>
         </div>
         <div class="date-row">
-          <div class="field">
-            <label>Start Date *</label>
-            <input type="date" id="applyStart" oninput="calcDays()">
-          </div>
-          <div class="field">
-            <label>End Date *</label>
-            <input type="date" id="applyEnd" oninput="calcDays()">
-          </div>
+          <div class="field"><label>Start Date *</label><input type="date" id="applyStart" oninput="calcDays()"></div>
+          <div class="field"><label>End Date *</label>  <input type="date" id="applyEnd"   oninput="calcDays()"></div>
         </div>
-        <div class="days-display" id="daysDisplay">
+        <div class="days-display">
           <div class="d" id="daysCount">—</div>
           <div class="l">Calendar Days</div>
         </div>
@@ -507,17 +291,14 @@ body {
         </div>
         <div class="field">
           <label>Supporting Document <span style="color:var(--slate)">(optional)</span></label>
-          <div class="file-zone" id="fileZone">
-            <input type="file" id="applyFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-              onchange="handleFile(this)">
+          <div class="file-zone">
+            <input type="file" id="applyFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="handleFile(this)">
             <div class="file-zone-icon">📎</div>
-            <div class="file-zone-text">Tap to attach document</div>
+            <div class="file-zone-text">Tap to attach a document</div>
             <div class="file-name" id="fileName"></div>
           </div>
         </div>
-        <button class="btn btn-success btn-full" id="submitBtn" onclick="submitLeave()">
-          ✅ Submit Leave Request
-        </button>
+        <button class="btn btn-success btn-full" id="submitBtn" onclick="submitLeave()">✅ Submit Leave Request</button>
       </div>
     </div>
 
@@ -536,93 +317,83 @@ body {
     </div>
 
   </div>
-
   <div class="bottom-nav">
-    <button class="nav-item active" id="navHome"    onclick="showPage('pageHome')">
-      <span class="nav-icon">🏠</span>Home
-    </button>
-    <button class="nav-item" id="navApply"   onclick="showPage('pageApply')">
-      <span class="nav-icon">✍️</span>Apply
-    </button>
-    <button class="nav-item" id="navHistory" onclick="showPage('pageHistory')">
-      <span class="nav-icon">📋</span>Requests
-    </button>
-    <button class="nav-item" id="navBalance" onclick="showPage('pageBalance')">
-      <span class="nav-icon">📊</span>Balance
-    </button>
+    <button class="nav-item active" id="navHome"    onclick="showPage('pageHome')">    <span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-item"        id="navApply"   onclick="showPage('pageApply')">   <span class="nav-icon">✍️</span>Apply</button>
+    <button class="nav-item"        id="navHistory" onclick="showPage('pageHistory')"> <span class="nav-icon">📋</span>Requests</button>
+    <button class="nav-item"        id="navBalance" onclick="showPage('pageBalance')"> <span class="nav-icon">📊</span>Balance</button>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════════════════════════════════
 const SUPABASE_URL  = 'https://cxzdwqzjtacwbntnlxsj.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emR3cXpqdGFjd2JudG5seHNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MzU2MTcsImV4cCI6MjA5NjQxMTYxN30.Oy7tpOUMf8o8oGngNQXG7ChlrGfZNO7aDPwf11Q4V5A';
-
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// ══════════════════════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════════════════════
-let currentUser     = null;
-let currentEmployee = null;
-let leaveTypes      = [];
-let balances        = [];
-let requests        = [];
+let currentUser = null, currentEmployee = null;
+let leaveTypes = [], balances = [], requests = [];
 
-// ══════════════════════════════════════════════════════════════════════
-// BOOT — checks URL for auth callback tokens
-// ══════════════════════════════════════════════════════════════════════
+// ── BOOT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   setDefaultDates();
 
-  // Listen for auth state changes including PASSWORD_RECOVERY
+  // Detect if this is a password recovery / invite redirect from email link
+  const hash   = new URLSearchParams(window.location.hash.replace('#',''));
+  const search = new URLSearchParams(window.location.search);
+  const linkType = hash.get('type') || search.get('type') || '';
+  const hasCode  = search.has('code'); // PKCE flow
+
+  // Register auth listener
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
-      // Employee clicked password reset / invite link
-      currentUser = session.user;
-      showSetPasswordScreen('reset');
+      currentUser = session?.user || null;
+      hideLoader();
+      showSetPasswordScreen();
       return;
     }
     if (event === 'SIGNED_IN' && session) {
       currentUser = session.user;
       await loadEmployee();
+      hideLoader();
       showApp();
       return;
     }
     if (event === 'SIGNED_OUT') {
-      currentUser = null;
-      currentEmployee = null;
+      currentUser = null; currentEmployee = null;
+      hideLoader();
       showScreen('loginScreen');
     }
   });
 
-  // Check existing session
+  // If coming from email link (recovery or invite), wait for PASSWORD_RECOVERY event
+  if (linkType === 'recovery' || linkType === 'invite' || hasCode) {
+    // Show set-password screen immediately — event will confirm & populate user
+    hideLoader();
+    showSetPasswordScreen();
+    return;
+  }
+
+  // Normal boot: check existing session
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
     await loadEmployee();
+    hideLoader();
     showApp();
   } else {
+    hideLoader();
     showScreen('loginScreen');
   }
 });
 
-// ══════════════════════════════════════════════════════════════════════
-// SET PASSWORD SCREEN
-// ══════════════════════════════════════════════════════════════════════
-function showSetPasswordScreen(type) {
-  if (type === 'invite') {
-    document.getElementById('setPwdTitle').textContent = 'Welcome to URIX Portal! 👋';
-    document.getElementById('setPwdSub').textContent =
-      'You have been invited. Please set your password to get started.';
-  } else {
-    document.getElementById('setPwdTitle').textContent = 'Set Your Password';
-    document.getElementById('setPwdSub').textContent =
-      'Please choose a new password for your account.';
-  }
+function hideLoader() {
+  const el = document.getElementById('loadingOverlay');
+  if (el) el.style.display = 'none';
+}
+
+// ── SET PASSWORD ───────────────────────────────────────────────────────
+function showSetPasswordScreen() {
   showScreen('setPasswordScreen');
 }
 
@@ -630,7 +401,6 @@ async function doSetPassword() {
   const pwd  = document.getElementById('newPassword').value;
   const pwd2 = document.getElementById('confirmPassword').value;
   const btn  = document.getElementById('setPwdBtn');
-
   hideAlert('setPwdAlert');
 
   if (!pwd || pwd.length < 8) {
@@ -642,29 +412,32 @@ async function doSetPassword() {
     return;
   }
 
-  btn.disabled    = true;
+  btn.disabled = true;
   btn.textContent = 'Setting password...';
 
-  const { error } = await sb.auth.updateUser({ password: pwd });
+  const { data, error } = await sb.auth.updateUser({ password: pwd });
 
   if (error) {
-    showAlert('setPwdAlert', `Could not set password: ${error.message}`, 'error');
-    btn.disabled    = false;
-    btn.textContent = '🔐 Set My Password';
+    // Session may have expired — ask to request new link
+    showAlert('setPwdAlert',
+      'The link has expired. Please contact HR to send a new password reset.',
+      'error');
+    btn.disabled = false;
+    btn.textContent = '🔐 Set My Password & Sign In';
     return;
   }
 
-  // Password set — load employee and show app
+  currentUser = data.user;
   showAlert('setPwdAlert', '✅ Password set! Loading your dashboard...', 'success');
   await loadEmployee();
-  setTimeout(() => showApp(), 1200);
+  setTimeout(() => showApp(), 1000);
 }
 
 function checkStrength(pwd) {
   const fill = document.getElementById('strengthFill');
   let score = 0;
-  if (pwd.length >= 8)  score++;
-  if (pwd.length >= 12) score++;
+  if (pwd.length >= 8)   score++;
+  if (pwd.length >= 12)  score++;
   if (/[A-Z]/.test(pwd)) score++;
   if (/[0-9]/.test(pwd)) score++;
   const colors = ['#DC2626','#D97706','#2563EB','#16A34A'];
@@ -673,33 +446,22 @@ function checkStrength(pwd) {
   fill.style.background = pwd.length === 0 ? '' : colors[Math.min(score,3)];
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// LOGIN
-// ══════════════════════════════════════════════════════════════════════
+// ── LOGIN ──────────────────────────────────────────────────────────────
 async function doLogin() {
-  const email    = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  const btn      = document.getElementById('loginBtn');
-
-  if (!email || !password) {
-    showAlert('loginAlert', 'Please enter your email and password.', 'error');
-    return;
-  }
-
-  btn.disabled      = true;
-  btn.textContent   = 'Signing in...';
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd   = document.getElementById('loginPassword').value;
+  const btn   = document.getElementById('loginBtn');
+  if (!email || !pwd) { showAlert('loginAlert', 'Please enter your email and password.', 'error'); return; }
+  btn.disabled = true; btn.textContent = 'Signing in...';
   hideAlert('loginAlert');
-
-  const { error } = await sb.auth.signInWithPassword({ email, password });
-
+  const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
   if (error) {
     showAlert('loginAlert',
       error.message === 'Invalid login credentials'
         ? 'Incorrect email or password. Please try again.'
         : error.message,
       'error');
-    btn.disabled    = false;
-    btn.textContent = 'Sign In';
+    btn.disabled = false; btn.textContent = 'Sign In';
   }
 }
 
@@ -709,121 +471,82 @@ async function doLogout() {
   leaveTypes = []; balances = []; requests = [];
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// LOAD EMPLOYEE PROFILE
-// ══════════════════════════════════════════════════════════════════════
+// ── LOAD EMPLOYEE ──────────────────────────────────────────────────────
 async function loadEmployee() {
+  if (!currentUser) return;
   try {
     const { data } = await sb
       .from('employee_auth')
-      .select('employee_id, employees(id,employee_code,full_name,department,position)')
+      .select('employee_id,employees(id,employee_code,full_name,department,position)')
       .eq('auth_user_id', currentUser.id)
       .single();
     if (data?.employees) currentEmployee = data.employees;
   } catch { }
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// SHOW APP
-// ══════════════════════════════════════════════════════════════════════
+// ── SHOW APP ───────────────────────────────────────────────────────────
 async function showApp() {
   showScreen('appScreen');
-
   const name = currentEmployee?.full_name || currentUser?.email || 'Employee';
   const dept = currentEmployee?.department || '';
-
-  document.getElementById('headerUser').textContent =
-    dept ? `${name} · ${dept}` : name;
-  document.getElementById('welcomeName').textContent =
-    `${getGreeting()}, ${firstName(name)}! 👋`;
-  document.getElementById('welcomeDate').textContent =
-    new Date().toLocaleDateString('en-LR', {
-      weekday:'long', year:'numeric', month:'long', day:'numeric'
-    });
-
+  document.getElementById('headerUser').textContent  = dept ? `${name} · ${dept}` : name;
+  document.getElementById('welcomeName').textContent = `${getGreeting()}, ${firstName(name)}! 👋`;
+  document.getElementById('welcomeDate').textContent = new Date().toLocaleDateString('en-LR', {
+    weekday:'long', year:'numeric', month:'long', day:'numeric'
+  });
   await Promise.all([loadLeaveTypes(), loadBalances(), loadRequests()]);
   renderHome();
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// DATA LOADERS
-// ══════════════════════════════════════════════════════════════════════
+// ── DATA ───────────────────────────────────────────────────────────────
 async function loadLeaveTypes() {
   const { data } = await sb.from('leave_types').select('*').order('name');
   leaveTypes = data || [];
   const sel = document.getElementById('applyType');
   sel.innerHTML = '<option value="">Select leave type...</option>';
-  leaveTypes.forEach(lt => {
-    sel.innerHTML += `<option value="${lt.id}">${lt.name}</option>`;
-  });
+  leaveTypes.forEach(lt => sel.innerHTML += `<option value="${lt.id}">${lt.name}</option>`);
 }
 
 async function loadBalances() {
   if (!currentEmployee) return;
-  const year = new Date().getFullYear();
-  const { data } = await sb
-    .from('leave_balances').select('*')
+  const { data } = await sb.from('leave_balances').select('*')
     .eq('employee_id', currentEmployee.id)
-    .eq('year_applicable', year);
+    .eq('year_applicable', new Date().getFullYear());
   balances = data || [];
 }
 
 async function loadRequests() {
   if (!currentEmployee) return;
-  const { data } = await sb
-    .from('leave_requests').select('*')
+  const { data } = await sb.from('leave_requests').select('*')
     .eq('employee_id', currentEmployee.id)
     .order('submitted_at', { ascending: false });
   requests = data || [];
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// RENDER HOME
-// ══════════════════════════════════════════════════════════════════════
+// ── RENDER ─────────────────────────────────────────────────────────────
 function renderHome() {
-  const totalRemaining = balances.reduce((s,b) => s + (b.remaining_days||0), 0);
-  const totalUsed      = balances.reduce((s,b) => s + (b.used_days||0), 0);
-  const pending  = requests.filter(r => r.status === 'Pending').length;
-  const approved = requests.filter(r => r.status === 'Approved').length;
-
-  document.getElementById('statRemaining').textContent = totalRemaining.toFixed(1);
-  document.getElementById('statPending').textContent   = pending;
-  document.getElementById('statApproved').textContent  = approved;
-  document.getElementById('statUsed').textContent      = totalUsed.toFixed(1);
-
+  const rem  = balances.reduce((s,b) => s + (b.remaining_days||0), 0);
+  const used = balances.reduce((s,b) => s + (b.used_days||0), 0);
+  document.getElementById('statRemaining').textContent = rem.toFixed(1);
+  document.getElementById('statPending').textContent   = requests.filter(r=>r.status==='Pending').length;
+  document.getElementById('statApproved').textContent  = requests.filter(r=>r.status==='Approved').length;
+  document.getElementById('statUsed').textContent      = used.toFixed(1);
   const el = document.getElementById('latestRequest');
-  if (!requests.length) {
-    el.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">📭</div>
-        <div class="empty-text">No requests yet</div>
-        <div class="empty-sub">Your latest request will appear here</div>
-      </div>`;
-  } else {
-    el.innerHTML = buildRequestHTML(requests[0]);
-  }
+  el.innerHTML = requests.length ? buildRequestHTML(requests[0]) : `
+    <div class="empty">
+      <div class="empty-icon">📭</div>
+      <div class="empty-text">No requests yet</div>
+    </div>`;
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// RENDER HISTORY
-// ══════════════════════════════════════════════════════════════════════
 function renderHistory() {
   const el = document.getElementById('historyList');
-  if (!requests.length) {
-    el.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">📋</div>
-        <div class="empty-text">No leave requests yet</div>
-      </div>`;
-    return;
-  }
-  el.innerHTML = requests.map(buildRequestHTML).join('');
+  el.innerHTML = requests.length
+    ? requests.map(buildRequestHTML).join('')
+    : `<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No requests yet</div></div>`;
 }
 
 function buildRequestHTML(r) {
-  const badge   = badgeHTML(r.status);
-  const comment = r.approval_comments
-    ? `<div class="request-comment">💬 ${r.approval_comments}</div>` : '';
   return `
     <div class="request-item fade-in">
       <div class="request-header">
@@ -831,64 +554,39 @@ function buildRequestHTML(r) {
           <div class="request-type">${r.leave_type_name}</div>
           <div class="request-ref">${r.reference_no || 'Pending sync'}</div>
         </div>
-        ${badge}
+        ${badgeHTML(r.status)}
       </div>
-      <div class="request-dates">📅 ${fmtDate(r.start_date)} → ${fmtDate(r.end_date)} &nbsp;·&nbsp; ${r.total_days} day(s)</div>
+      <div class="request-dates">📅 ${fmtDate(r.start_date)} → ${fmtDate(r.end_date)} · ${r.total_days} day(s)</div>
       <div class="request-reason">"${r.reason}"</div>
-      ${comment}
+      ${r.approval_comments ? `<div class="request-comment">💬 ${r.approval_comments}</div>` : ''}
       <div style="font-size:11px;color:var(--slate);margin-top:8px">Submitted ${fmtDateTime(r.submitted_at)}</div>
     </div>`;
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// RENDER BALANCE
-// ══════════════════════════════════════════════════════════════════════
 function renderBalance() {
-  const year = new Date().getFullYear();
-  document.getElementById('balanceYear').textContent = `Leave balances for ${year}`;
+  document.getElementById('balanceYear').textContent = `Leave balances for ${new Date().getFullYear()}`;
   const el = document.getElementById('balanceList');
   if (!balances.length) {
-    el.innerHTML = `
-      <div class="card">
-        <div class="empty">
-          <div class="empty-icon">📊</div>
-          <div class="empty-text">No balance data</div>
-          <div class="empty-sub">HR will sync your balances shortly</div>
-        </div>
-      </div>`;
+    el.innerHTML = `<div class="card"><div class="empty"><div class="empty-icon">📊</div><div class="empty-text">No balance data</div><div class="empty-sub">HR will sync your balances shortly</div></div></div>`;
     return;
   }
-  el.innerHTML = `<div class="card">` +
-    balances.map(b => `
-      <div class="balance-row">
-        <div>
-          <div class="balance-type">${b.leave_type_name}</div>
-          <div style="font-size:12px;color:var(--slate)">${b.allocated_days} allocated</div>
-        </div>
-        <div class="balance-nums">
-          <div class="balance-num">
-            <div class="n" style="color:var(--amber)">${b.pending_days}</div>
-            <div class="l">Pending</div>
-          </div>
-          <div class="balance-num">
-            <div class="n" style="color:var(--slate)">${b.used_days}</div>
-            <div class="l">Used</div>
-          </div>
-          <div class="balance-num">
-            <div class="n" style="color:var(--green)">${b.remaining_days}</div>
-            <div class="l">Left</div>
-          </div>
-        </div>
-      </div>`
-    ).join('') + `</div>`;
+  el.innerHTML = `<div class="card">` + balances.map(b => `
+    <div class="balance-row">
+      <div>
+        <div class="balance-type">${b.leave_type_name}</div>
+        <div style="font-size:12px;color:var(--slate)">${b.allocated_days} allocated</div>
+      </div>
+      <div class="balance-nums">
+        <div class="balance-num"><div class="n" style="color:var(--amber)">${b.pending_days}</div><div class="l">Pending</div></div>
+        <div class="balance-num"><div class="n" style="color:var(--slate)">${b.used_days}</div><div class="l">Used</div></div>
+        <div class="balance-num"><div class="n" style="color:var(--green)">${b.remaining_days}</div><div class="l">Left</div></div>
+      </div>
+    </div>`).join('') + `</div>`;
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// SUBMIT LEAVE
-// ══════════════════════════════════════════════════════════════════════
+// ── SUBMIT LEAVE ───────────────────────────────────────────────────────
 async function submitLeave() {
   hideAlert('applyAlert');
-
   const typeId = document.getElementById('applyType').value;
   const start  = document.getElementById('applyStart').value;
   const end    = document.getElementById('applyEnd').value;
@@ -896,34 +594,24 @@ async function submitLeave() {
   const file   = document.getElementById('applyFile').files[0];
 
   if (!typeId || !start || !end || !reason) {
-    showAlert('applyAlert', 'Please fill in all required fields.', 'error');
-    return;
+    showAlert('applyAlert','Please fill in all required fields.','error'); return;
   }
-
-  const startD = new Date(start);
-  const endD   = new Date(end);
-  if (endD < startD) {
-    showAlert('applyAlert', 'End date cannot be before start date.', 'error');
-    return;
-  }
+  const startD = new Date(start), endD = new Date(end);
+  if (endD < startD) { showAlert('applyAlert','End date cannot be before start date.','error'); return; }
 
   const days = Math.round((endD - startD) / 86400000) + 1;
   const lt   = leaveTypes.find(t => t.id == typeId);
   const btn  = document.getElementById('submitBtn');
-
-  btn.disabled    = true;
-  btn.textContent = 'Submitting...';
+  btn.disabled = true; btn.textContent = 'Submitting...';
 
   try {
     let attachmentUrl = null;
     if (file) {
-      const path = `${currentEmployee?.id || 'unknown'}/${Date.now()}_${file.name}`;
-      const { error: uploadErr } = await sb.storage
-        .from('leave-attachments').upload(path, file);
-      if (!uploadErr) {
-        const { data: urlData } = sb.storage
-          .from('leave-attachments').getPublicUrl(path);
-        attachmentUrl = urlData?.publicUrl;
+      const path = `${currentEmployee?.id||'u'}/${Date.now()}_${file.name}`;
+      const { error: ue } = await sb.storage.from('leave-attachments').upload(path, file);
+      if (!ue) {
+        const { data: ud } = sb.storage.from('leave-attachments').getPublicUrl(path);
+        attachmentUrl = ud?.publicUrl;
       }
     }
 
@@ -935,19 +623,15 @@ async function submitLeave() {
       employee_code:   currentEmployee?.employee_code || '',
       leave_type_id:   typeId,
       leave_type_name: lt?.name || '',
-      start_date:      start,
-      end_date:        end,
-      total_days:      days,
-      reason,
-      attachment_url:  attachmentUrl,
-      status:          'Pending',
-      synced_to_local: false
+      start_date: start, end_date: end, total_days: days,
+      reason, attachment_url: attachmentUrl,
+      status: 'Pending', synced_to_local: false
     });
 
     if (error) throw error;
 
     showAlert('applyAlert',
-      `✅ Request submitted!\n\nReference: ${refNo}\nStatus: Pending approval`,
+      `✅ Request submitted!\n\nReference: ${refNo}\nStatus: Pending approval\n\nHR will review your request shortly.`,
       'success');
 
     document.getElementById('applyType').value   = '';
@@ -957,34 +641,25 @@ async function submitLeave() {
     document.getElementById('applyFile').value   = '';
     document.getElementById('fileName').textContent = '';
     document.getElementById('daysCount').textContent = '—';
-
-    await loadRequests();
-    renderHome();
-
+    await loadRequests(); renderHome();
   } catch (err) {
     showAlert('applyAlert', `Failed to submit: ${err.message}`, 'error');
   } finally {
-    btn.disabled    = false;
-    btn.textContent = '✅ Submit Leave Request';
+    btn.disabled = false; btn.textContent = '✅ Submit Leave Request';
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════════════════════════════
-function showPage(pageId) {
+// ── NAVIGATION ─────────────────────────────────────────────────────────
+function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  const navMap = {
-    pageHome: 'navHome', pageApply: 'navApply',
-    pageHistory: 'navHistory', pageBalance: 'navBalance'
-  };
-  const nav = document.getElementById(navMap[pageId]);
+  document.getElementById(id).classList.add('active');
+  const m = { pageHome:'navHome', pageApply:'navApply', pageHistory:'navHistory', pageBalance:'navBalance' };
+  const nav = document.getElementById(m[id]);
   if (nav) nav.classList.add('active');
-  window.scrollTo(0, 0);
-  if (pageId === 'pageHistory') renderHistory();
-  if (pageId === 'pageBalance') renderBalance();
+  window.scrollTo(0,0);
+  if (id === 'pageHistory') renderHistory();
+  if (id === 'pageBalance') renderBalance();
 }
 
 function showScreen(id) {
@@ -992,9 +667,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════════════════
+// ── HELPERS ────────────────────────────────────────────────────────────
 function calcDays() {
   const s = document.getElementById('applyStart').value;
   const e = document.getElementById('applyEnd').value;
@@ -1003,65 +676,34 @@ function calcDays() {
     document.getElementById('daysCount').textContent = d > 0 ? d : '—';
   }
 }
-
 function handleFile(input) {
-  const f = input.files[0];
-  document.getElementById('fileName').textContent = f ? `📎 ${f.name}` : '';
+  document.getElementById('fileName').textContent = input.files[0] ? `📎 ${input.files[0].name}` : '';
 }
-
 function setDefaultDates() {
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('applyStart').value = today;
   document.getElementById('applyEnd').value   = today;
   document.getElementById('daysCount').textContent = '1';
 }
-
-function badgeHTML(status) {
-  const map = {
-    Pending:   ['badge-pending',  '⏳'],
-    Approved:  ['badge-approved', '✅'],
-    Rejected:  ['badge-rejected', '❌'],
-    Cancelled: ['badge-cancelled','—']
-  };
-  const [cls, icon] = map[status] || ['badge-pending','⏳'];
-  return `<span class="badge ${cls}">${icon} ${status}</span>`;
+function badgeHTML(s) {
+  const m = { Pending:['badge-pending','⏳'], Approved:['badge-approved','✅'], Rejected:['badge-rejected','❌'], Cancelled:['badge-cancelled','—'] };
+  const [c,i] = m[s]||['badge-pending','⏳'];
+  return `<span class="badge ${c}">${i} ${s}</span>`;
 }
-
 function fmtDate(d) {
   if (!d) return '—';
-  return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', {
-    day:'2-digit', month:'short', year:'numeric'
-  });
+  return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 }
-
 function fmtDateTime(d) {
   if (!d) return '—';
-  return new Date(d).toLocaleDateString('en-GB', {
-    day:'2-digit', month:'short', year:'numeric'
-  });
+  return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 }
-
-function firstName(name) { return name?.split(' ')[0] || 'there'; }
-
-function getGreeting() {
-  const h = new Date().getHours();
-  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-}
-
-function showAlert(id, msg, type) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.className   = `alert alert-${type} show`;
-}
-
-function hideAlert(id) {
-  document.getElementById(id).className = 'alert';
-}
-
+function firstName(n) { return n?.split(' ')[0]||'there'; }
+function getGreeting() { const h=new Date().getHours(); return h<12?'Good morning':h<17?'Good afternoon':'Good evening'; }
+function showAlert(id,msg,type) { const e=document.getElementById(id); e.textContent=msg; e.className=`alert alert-${type} show`; }
+function hideAlert(id) { document.getElementById(id).className='alert'; }
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' &&
-    document.getElementById('loginScreen').classList.contains('active'))
-    doLogin();
+  if (e.key==='Enter' && document.getElementById('loginScreen').classList.contains('active')) doLogin();
 });
 </script>
 </body>
