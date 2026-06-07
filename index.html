@@ -38,18 +38,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── SCREENS ── */
 .screen { display: none; min-height: 100vh; }
 .screen.active { display: flex; flex-direction: column; }
 
-/* ── LOGIN ── */
-#loginScreen {
+/* ── AUTH SCREENS (login + set password) ── */
+#loginScreen, #setPasswordScreen {
   background: var(--navy);
   align-items: center;
   justify-content: center;
   padding: 24px;
 }
-.login-card {
+
+.auth-card {
   background: var(--white);
   border-radius: 20px;
   padding: 40px 32px;
@@ -57,20 +57,34 @@ body {
   max-width: 400px;
   box-shadow: 0 24px 64px rgba(0,0,0,.3);
 }
-.login-logo {
+
+.auth-logo {
   width: 56px; height: 56px;
   background: var(--navy);
   border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: center;
+  justify-content: center;
   font-size: 24px; margin-bottom: 20px;
 }
-.login-title {
+
+.auth-title {
   font-size: 22px; font-weight: 700;
   color: var(--navy); margin-bottom: 4px;
 }
-.login-sub {
+
+.auth-sub {
   font-size: 13px; color: var(--slate);
   margin-bottom: 32px;
+}
+
+.password-rules {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--slate);
+  line-height: 1.8;
 }
 
 /* ── FORM ELEMENTS ── */
@@ -114,13 +128,8 @@ body {
 .btn-success { background: var(--green); color: var(--white); }
 .btn-success:hover { background: #15803D; }
 .btn-danger { background: var(--red-lt); color: var(--red); }
-.btn-danger:hover { background: #FEE2E2; }
-.btn-ghost {
-  background: transparent; color: var(--slate);
-  border: 1.5px solid var(--border);
-}
+.btn-ghost { background: transparent; color: var(--slate); border: 1.5px solid var(--border); }
 .btn-ghost:hover { background: var(--bg); }
-.btn-sm { padding: 8px 14px; font-size: 13px; }
 .btn-full { width: 100%; }
 
 /* ── ALERT ── */
@@ -130,7 +139,7 @@ body {
   margin-bottom: 16px; display: none;
 }
 .alert.show { display: block; }
-.alert-error { background: var(--red-lt); color: var(--red); }
+.alert-error   { background: var(--red-lt);   color: var(--red); }
 .alert-success { background: var(--green-lt); color: var(--green); }
 .alert-warning { background: var(--amber-lt); color: var(--amber); }
 
@@ -151,11 +160,8 @@ body {
   display: flex; align-items: center;
   justify-content: center; font-size: 18px;
 }
-.app-title { color: var(--white); font-weight: 700; font-size: 16px; }
-.app-user {
-  font-size: 12px;
-  color: rgba(255,255,255,.6);
-}
+.app-title  { color: var(--white); font-weight: 700; font-size: 16px; }
+.app-user   { font-size: 12px; color: rgba(255,255,255,.6); }
 .btn-logout {
   background: rgba(255,255,255,.1);
   border: none; color: var(--white);
@@ -188,14 +194,8 @@ body {
 /* ── PAGE CONTENT ── */
 .page { display: none; padding: 20px 16px 100px; }
 .page.active { display: block; }
-.page-title {
-  font-size: 20px; font-weight: 700;
-  color: var(--navy); margin-bottom: 4px;
-}
-.page-sub {
-  font-size: 13px; color: var(--slate);
-  margin-bottom: 20px;
-}
+.page-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.page-sub   { font-size: 13px; color: var(--slate); margin-bottom: 20px; }
 
 /* ── CARDS ── */
 .card {
@@ -219,8 +219,7 @@ body {
 .stat-card {
   background: var(--white);
   border-radius: var(--radius);
-  padding: 16px;
-  box-shadow: var(--shadow);
+  padding: 16px; box-shadow: var(--shadow);
   border-left: 4px solid var(--blue);
 }
 .stat-card.green { border-color: var(--green); }
@@ -231,17 +230,13 @@ body {
   color: var(--navy); line-height: 1;
   font-family: 'DM Mono', monospace;
 }
-.stat-lbl {
-  font-size: 12px; color: var(--slate);
-  font-weight: 500; margin-top: 4px;
-}
+.stat-lbl { font-size: 12px; color: var(--slate); font-weight: 500; margin-top: 4px; }
 
 /* ── WELCOME BANNER ── */
 .welcome-banner {
   background: linear-gradient(135deg, var(--navy) 0%, #1E3A8A 100%);
   border-radius: var(--radius);
-  padding: 20px;
-  color: var(--white);
+  padding: 20px; color: var(--white);
   margin-bottom: 16px;
   position: relative; overflow: hidden;
 }
@@ -251,45 +246,25 @@ body {
   transform: translateY(-50%);
   font-size: 48px; opacity: .15;
 }
-.welcome-name {
-  font-size: 18px; font-weight: 700;
-  margin-bottom: 4px;
-}
-.welcome-date {
-  font-size: 13px; opacity: .7;
-}
+.welcome-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.welcome-date { font-size: 13px; opacity: .7; }
 
 /* ── REQUEST LIST ── */
 .request-item {
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 10px;
+  padding: 16px; margin-bottom: 10px;
   background: var(--white);
-  transition: border-color .18s;
 }
 .request-item:last-child { margin-bottom: 0; }
 .request-header {
   display: flex; justify-content: space-between;
   align-items: flex-start; margin-bottom: 8px;
 }
-.request-type {
-  font-weight: 600; font-size: 15px;
-  color: var(--navy);
-}
-.request-ref {
-  font-size: 11px; color: var(--slate);
-  font-family: 'DM Mono', monospace;
-  margin-top: 2px;
-}
-.request-dates {
-  font-size: 13px; color: var(--slate);
-  margin-top: 6px;
-}
-.request-reason {
-  font-size: 13px; color: var(--slate);
-  margin-top: 4px; font-style: italic;
-}
+.request-type { font-weight: 600; font-size: 15px; color: var(--navy); }
+.request-ref  { font-size: 11px; color: var(--slate); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.request-dates { font-size: 13px; color: var(--slate); margin-top: 6px; }
+.request-reason { font-size: 13px; color: var(--slate); margin-top: 4px; font-style: italic; }
 .request-comment {
   font-size: 13px; color: var(--slate);
   margin-top: 6px; padding: 8px 12px;
@@ -300,13 +275,12 @@ body {
 .badge {
   display: inline-flex; align-items: center;
   gap: 4px; padding: 4px 10px;
-  border-radius: 100px; font-size: 12px;
-  font-weight: 600;
+  border-radius: 100px; font-size: 12px; font-weight: 600;
 }
-.badge-pending  { background: var(--amber-lt); color: var(--amber); }
-.badge-approved { background: var(--green-lt); color: var(--green); }
-.badge-rejected { background: var(--red-lt);   color: var(--red); }
-.badge-cancelled{ background: var(--bg);       color: var(--slate); }
+.badge-pending   { background: var(--amber-lt); color: var(--amber); }
+.badge-approved  { background: var(--green-lt); color: var(--green); }
+.badge-rejected  { background: var(--red-lt);   color: var(--red); }
+.badge-cancelled { background: var(--bg);       color: var(--slate); }
 
 /* ── BALANCE TABLE ── */
 .balance-row {
@@ -316,25 +290,13 @@ body {
 }
 .balance-row:last-child { border-bottom: none; }
 .balance-type { font-weight: 600; font-size: 14px; }
-.balance-days { font-family: 'DM Mono', monospace; }
-.balance-nums {
-  display: flex; gap: 16px; align-items: center;
-}
-.balance-num { text-align: center; }
-.balance-num .n {
-  font-size: 18px; font-weight: 700;
-  font-family: 'DM Mono', monospace;
-}
-.balance-num .l {
-  font-size: 10px; color: var(--slate);
-  text-transform: uppercase; letter-spacing: .3px;
-}
+.balance-nums { display: flex; gap: 16px; align-items: center; }
+.balance-num  { text-align: center; }
+.balance-num .n { font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.balance-num .l { font-size: 10px; color: var(--slate); text-transform: uppercase; letter-spacing: .3px; }
 
 /* ── EMPTY STATE ── */
-.empty {
-  text-align: center; padding: 40px 20px;
-  color: var(--slate);
-}
+.empty { text-align: center; padding: 40px 20px; color: var(--slate); }
 .empty-icon { font-size: 48px; margin-bottom: 12px; }
 .empty-text { font-size: 15px; font-weight: 500; }
 .empty-sub  { font-size: 13px; margin-top: 4px; }
@@ -343,8 +305,7 @@ body {
 .loader {
   display: flex; align-items: center;
   justify-content: center; gap: 8px;
-  padding: 32px; color: var(--slate);
-  font-size: 14px;
+  padding: 32px; color: var(--slate); font-size: 14px;
 }
 .spinner {
   width: 20px; height: 20px;
@@ -367,20 +328,13 @@ body {
 .file-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .file-zone-icon { font-size: 28px; margin-bottom: 8px; }
 .file-zone-text { font-size: 13px; color: var(--slate); }
-.file-name {
-  font-size: 13px; color: var(--green);
-  font-weight: 500; margin-top: 8px;
-}
+.file-name      { font-size: 13px; color: var(--green); font-weight: 500; margin-top: 8px; }
 
 /* ── DATE ROW ── */
-.date-row {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
+.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .days-display {
   background: var(--blue-lt); border-radius: 10px;
-  padding: 14px; text-align: center;
-  margin-bottom: 16px;
+  padding: 14px; text-align: center; margin-bottom: 16px;
 }
 .days-display .d {
   font-size: 32px; font-weight: 700;
@@ -388,31 +342,39 @@ body {
 }
 .days-display .l { font-size: 12px; color: var(--slate); margin-top: 2px; }
 
-/* ── RESPONSIVE ── */
+/* ── STRENGTH BAR ── */
+.strength-bar {
+  height: 4px; border-radius: 2px;
+  background: var(--border); margin-top: 8px;
+  overflow: hidden;
+}
+.strength-fill {
+  height: 100%; border-radius: 2px;
+  transition: width .3s, background .3s;
+  width: 0%;
+}
+
 @media (min-width: 640px) {
-  #loginScreen { background: linear-gradient(135deg, #0F1428 0%, #1E3A8A 100%); }
+  #loginScreen, #setPasswordScreen {
+    background: linear-gradient(135deg, #0F1428 0%, #1E3A8A 100%);
+  }
   .page { max-width: 640px; margin: 0 auto; padding: 24px 24px 100px; }
   .stats-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* ── ANIMATIONS ── */
 .fade-in { animation: fadeIn .3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════
-     LOGIN SCREEN
-═══════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════ LOGIN ═══════════════════════════════ -->
 <div id="loginScreen" class="screen">
-  <div class="login-card">
-    <div class="login-logo">🏢</div>
-    <div class="login-title">Employee Portal</div>
-    <div class="login-sub">URIX HRMS · UriX Technology</div>
-
+  <div class="auth-card">
+    <div class="auth-logo">🏢</div>
+    <div class="auth-title">Employee Portal</div>
+    <div class="auth-sub">URIX HRMS · Access Bank Liberia</div>
     <div id="loginAlert" class="alert"></div>
-
     <div class="field">
       <label>Work Email</label>
       <input type="email" id="loginEmail" placeholder="you@company.com" autocomplete="email">
@@ -421,23 +383,47 @@ body {
       <label>Password</label>
       <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
     </div>
-
-    <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">
-      Sign In
-    </button>
-
+    <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button>
     <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--slate);">
       Forgot your password? Contact HR.
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     APP SCREEN
-═══════════════════════════════════════════════════════════ -->
+<!-- ═════════════════════════ SET PASSWORD ══════════════════════════════ -->
+<div id="setPasswordScreen" class="screen">
+  <div class="auth-card">
+    <div class="auth-logo">🔐</div>
+    <div class="auth-title" id="setPwdTitle">Welcome to URIX Portal!</div>
+    <div class="auth-sub" id="setPwdSub">Please set your password to get started.</div>
+    <div id="setPwdAlert" class="alert"></div>
+
+    <div class="password-rules">
+      Password must be at least <strong>8 characters</strong> long.
+    </div>
+
+    <div class="field">
+      <label>New Password</label>
+      <input type="password" id="newPassword" placeholder="Enter new password"
+        oninput="checkStrength(this.value)">
+      <div class="strength-bar">
+        <div class="strength-fill" id="strengthFill"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Confirm Password</label>
+      <input type="password" id="confirmPassword" placeholder="Re-enter password">
+    </div>
+
+    <button class="btn btn-primary" id="setPwdBtn" onclick="doSetPassword()">
+      🔐 Set My Password
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ APP ══════════════════════════════════ -->
 <div id="appScreen" class="screen">
 
-  <!-- Header -->
   <div class="app-header">
     <div class="app-header-left">
       <div class="app-logo">🏢</div>
@@ -449,16 +435,14 @@ body {
     <button class="btn-logout" onclick="doLogout()">Sign Out</button>
   </div>
 
-  <!-- Pages -->
   <div style="flex:1">
 
-    <!-- ── HOME ── -->
+    <!-- HOME -->
     <div id="pageHome" class="page active">
       <div class="welcome-banner">
-        <div class="welcome-name" id="welcomeName">Good morning!</div>
+        <div class="welcome-name" id="welcomeName">Good morning! 👋</div>
         <div class="welcome-date" id="welcomeDate"></div>
       </div>
-
       <div class="stats-grid">
         <div class="stat-card green">
           <div class="stat-val" id="statRemaining">—</div>
@@ -477,36 +461,25 @@ body {
           <div class="stat-lbl">Days Used</div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Quick Actions</div>
         <div style="display:flex;flex-direction:column;gap:10px">
-          <button class="btn btn-success btn-full" onclick="showPage('pageApply')">
-            ✍️ Apply for Leave
-          </button>
-          <button class="btn btn-ghost btn-full" onclick="showPage('pageHistory')">
-            📋 View My Requests
-          </button>
-          <button class="btn btn-ghost btn-full" onclick="showPage('pageBalance')">
-            📊 Check Leave Balance
-          </button>
+          <button class="btn btn-success btn-full" onclick="showPage('pageApply')">✍️ Apply for Leave</button>
+          <button class="btn btn-ghost btn-full"   onclick="showPage('pageHistory')">📋 View My Requests</button>
+          <button class="btn btn-ghost btn-full"   onclick="showPage('pageBalance')">📊 Check Leave Balance</button>
         </div>
       </div>
-
-      <!-- Recent request -->
       <div class="card">
         <div class="card-title">Latest Request</div>
         <div id="latestRequest"><div class="loader"><div class="spinner"></div> Loading...</div></div>
       </div>
     </div>
 
-    <!-- ── APPLY ── -->
+    <!-- APPLY -->
     <div id="pageApply" class="page">
       <div class="page-title">Apply for Leave</div>
       <div class="page-sub">Fill in the form below to submit your leave request.</div>
-
       <div id="applyAlert" class="alert"></div>
-
       <div class="card">
         <div class="field">
           <label>Leave Type *</label>
@@ -514,7 +487,6 @@ body {
             <option value="">Select leave type...</option>
           </select>
         </div>
-
         <div class="date-row">
           <div class="field">
             <label>Start Date *</label>
@@ -525,62 +497,51 @@ body {
             <input type="date" id="applyEnd" oninput="calcDays()">
           </div>
         </div>
-
         <div class="days-display" id="daysDisplay">
           <div class="d" id="daysCount">—</div>
           <div class="l">Calendar Days</div>
         </div>
-
         <div class="field">
           <label>Reason *</label>
           <textarea id="applyReason" placeholder="Briefly describe why you are applying for leave..."></textarea>
         </div>
-
         <div class="field">
           <label>Supporting Document <span style="color:var(--slate)">(optional)</span></label>
           <div class="file-zone" id="fileZone">
             <input type="file" id="applyFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
               onchange="handleFile(this)">
             <div class="file-zone-icon">📎</div>
-            <div class="file-zone-text">Tap to attach document (PDF, image, Word)</div>
+            <div class="file-zone-text">Tap to attach document</div>
             <div class="file-name" id="fileName"></div>
           </div>
         </div>
-
         <button class="btn btn-success btn-full" id="submitBtn" onclick="submitLeave()">
           ✅ Submit Leave Request
         </button>
       </div>
     </div>
 
-    <!-- ── HISTORY ── -->
+    <!-- HISTORY -->
     <div id="pageHistory" class="page">
       <div class="page-title">My Requests</div>
-      <div class="page-sub">All your leave requests and their current status.</div>
-
-      <div id="historyList">
-        <div class="loader"><div class="spinner"></div> Loading...</div>
-      </div>
+      <div class="page-sub">All your leave requests and their status.</div>
+      <div id="historyList"><div class="loader"><div class="spinner"></div> Loading...</div></div>
     </div>
 
-    <!-- ── BALANCE ── -->
+    <!-- BALANCE -->
     <div id="pageBalance" class="page">
       <div class="page-title">Leave Balance</div>
       <div class="page-sub" id="balanceYear">Current year</div>
-
-      <div id="balanceList">
-        <div class="loader"><div class="spinner"></div> Loading...</div>
-      </div>
+      <div id="balanceList"><div class="loader"><div class="spinner"></div> Loading...</div></div>
     </div>
 
-  </div><!-- /pages -->
+  </div>
 
-  <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <button class="nav-item active" id="navHome" onclick="showPage('pageHome')">
+    <button class="nav-item active" id="navHome"    onclick="showPage('pageHome')">
       <span class="nav-icon">🏠</span>Home
     </button>
-    <button class="nav-item" id="navApply" onclick="showPage('pageApply')">
+    <button class="nav-item" id="navApply"   onclick="showPage('pageApply')">
       <span class="nav-icon">✍️</span>Apply
     </button>
     <button class="nav-item" id="navHistory" onclick="showPage('pageHistory')">
@@ -590,34 +551,55 @@ body {
       <span class="nav-icon">📊</span>Balance
     </button>
   </div>
-
-</div><!-- /appScreen -->
+</div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// SUPABASE INIT
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════════════════════
 const SUPABASE_URL  = 'https://cxzdwqzjtacwbntnlxsj.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emR3cXpqdGFjd2JudG5seHNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MzU2MTcsImV4cCI6MjA5NjQxMTYxN30.Oy7tpOUMf8o8oGngNQXG7ChlrGfZNO7aDPwf11Q4V5A';
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════════════════════
-let currentUser    = null;
-let currentEmployee= null;
-let leaveTypes     = [];
-let balances       = [];
-let requests       = [];
+// ══════════════════════════════════════════════════════════════════════
+let currentUser     = null;
+let currentEmployee = null;
+let leaveTypes      = [];
+let balances        = [];
+let requests        = [];
 
-// ═══════════════════════════════════════════════════════════════
-// BOOT
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
+// BOOT — checks URL for auth callback tokens
+// ══════════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
   setDefaultDates();
 
+  // Listen for auth state changes including PASSWORD_RECOVERY
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      // Employee clicked password reset / invite link
+      currentUser = session.user;
+      showSetPasswordScreen('reset');
+      return;
+    }
+    if (event === 'SIGNED_IN' && session) {
+      currentUser = session.user;
+      await loadEmployee();
+      showApp();
+      return;
+    }
+    if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      currentEmployee = null;
+      showScreen('loginScreen');
+    }
+  });
+
+  // Check existing session
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
@@ -626,21 +608,74 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else {
     showScreen('loginScreen');
   }
-
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      currentUser = session.user;
-      await loadEmployee();
-      showApp();
-    } else if (event === 'SIGNED_OUT') {
-      showScreen('loginScreen');
-    }
-  });
 });
 
-// ═══════════════════════════════════════════════════════════════
-// AUTH
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
+// SET PASSWORD SCREEN
+// ══════════════════════════════════════════════════════════════════════
+function showSetPasswordScreen(type) {
+  if (type === 'invite') {
+    document.getElementById('setPwdTitle').textContent = 'Welcome to URIX Portal! 👋';
+    document.getElementById('setPwdSub').textContent =
+      'You have been invited. Please set your password to get started.';
+  } else {
+    document.getElementById('setPwdTitle').textContent = 'Set Your Password';
+    document.getElementById('setPwdSub').textContent =
+      'Please choose a new password for your account.';
+  }
+  showScreen('setPasswordScreen');
+}
+
+async function doSetPassword() {
+  const pwd  = document.getElementById('newPassword').value;
+  const pwd2 = document.getElementById('confirmPassword').value;
+  const btn  = document.getElementById('setPwdBtn');
+
+  hideAlert('setPwdAlert');
+
+  if (!pwd || pwd.length < 8) {
+    showAlert('setPwdAlert', 'Password must be at least 8 characters.', 'error');
+    return;
+  }
+  if (pwd !== pwd2) {
+    showAlert('setPwdAlert', 'Passwords do not match. Please try again.', 'error');
+    return;
+  }
+
+  btn.disabled    = true;
+  btn.textContent = 'Setting password...';
+
+  const { error } = await sb.auth.updateUser({ password: pwd });
+
+  if (error) {
+    showAlert('setPwdAlert', `Could not set password: ${error.message}`, 'error');
+    btn.disabled    = false;
+    btn.textContent = '🔐 Set My Password';
+    return;
+  }
+
+  // Password set — load employee and show app
+  showAlert('setPwdAlert', '✅ Password set! Loading your dashboard...', 'success');
+  await loadEmployee();
+  setTimeout(() => showApp(), 1200);
+}
+
+function checkStrength(pwd) {
+  const fill = document.getElementById('strengthFill');
+  let score = 0;
+  if (pwd.length >= 8)  score++;
+  if (pwd.length >= 12) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  const colors = ['#DC2626','#D97706','#2563EB','#16A34A'];
+  const widths  = ['25%','50%','75%','100%'];
+  fill.style.width      = pwd.length === 0 ? '0%' : widths[Math.min(score,3)];
+  fill.style.background = pwd.length === 0 ? '' : colors[Math.min(score,3)];
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════════════════
 async function doLogin() {
   const email    = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
@@ -651,8 +686,8 @@ async function doLogin() {
     return;
   }
 
-  btn.disabled  = true;
-  btn.textContent = 'Signing in...';
+  btn.disabled      = true;
+  btn.textContent   = 'Signing in...';
   hideAlert('loginAlert');
 
   const { error } = await sb.auth.signInWithPassword({ email, password });
@@ -663,42 +698,38 @@ async function doLogin() {
         ? 'Incorrect email or password. Please try again.'
         : error.message,
       'error');
-    btn.disabled  = false;
+    btn.disabled    = false;
     btn.textContent = 'Sign In';
   }
 }
 
 async function doLogout() {
   await sb.auth.signOut();
-  currentUser     = null;
-  currentEmployee = null;
-  leaveTypes      = [];
-  balances        = [];
-  requests        = [];
+  currentUser = null; currentEmployee = null;
+  leaveTypes = []; balances = []; requests = [];
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // LOAD EMPLOYEE PROFILE
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 async function loadEmployee() {
-  const { data } = await sb
-    .from('employee_auth')
-    .select('employee_id, employees(id,employee_code,full_name,department,position)')
-    .eq('auth_user_id', currentUser.id)
-    .single();
-
-  if (data?.employees) {
-    currentEmployee = data.employees;
-  }
+  try {
+    const { data } = await sb
+      .from('employee_auth')
+      .select('employee_id, employees(id,employee_code,full_name,department,position)')
+      .eq('auth_user_id', currentUser.id)
+      .single();
+    if (data?.employees) currentEmployee = data.employees;
+  } catch { }
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // SHOW APP
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 async function showApp() {
   showScreen('appScreen');
 
-  const name = currentEmployee?.full_name || currentUser.email;
+  const name = currentEmployee?.full_name || currentUser?.email || 'Employee';
   const dept = currentEmployee?.department || '';
 
   document.getElementById('headerUser').textContent =
@@ -714,13 +745,12 @@ async function showApp() {
   renderHome();
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // DATA LOADERS
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 async function loadLeaveTypes() {
   const { data } = await sb.from('leave_types').select('*').order('name');
   leaveTypes = data || [];
-
   const sel = document.getElementById('applyType');
   sel.innerHTML = '<option value="">Select leave type...</option>';
   leaveTypes.forEach(lt => {
@@ -732,8 +762,7 @@ async function loadBalances() {
   if (!currentEmployee) return;
   const year = new Date().getFullYear();
   const { data } = await sb
-    .from('leave_balances')
-    .select('*')
+    .from('leave_balances').select('*')
     .eq('employee_id', currentEmployee.id)
     .eq('year_applicable', year);
   balances = data || [];
@@ -742,18 +771,16 @@ async function loadBalances() {
 async function loadRequests() {
   if (!currentEmployee) return;
   const { data } = await sb
-    .from('leave_requests')
-    .select('*')
+    .from('leave_requests').select('*')
     .eq('employee_id', currentEmployee.id)
     .order('submitted_at', { ascending: false });
   requests = data || [];
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // RENDER HOME
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 function renderHome() {
-  // Stats
   const totalRemaining = balances.reduce((s,b) => s + (b.remaining_days||0), 0);
   const totalUsed      = balances.reduce((s,b) => s + (b.used_days||0), 0);
   const pending  = requests.filter(r => r.status === 'Pending').length;
@@ -764,24 +791,22 @@ function renderHome() {
   document.getElementById('statApproved').textContent  = approved;
   document.getElementById('statUsed').textContent      = totalUsed.toFixed(1);
 
-  // Latest request
-  const latest = requests[0];
   const el = document.getElementById('latestRequest');
-  if (!latest) {
+  if (!requests.length) {
     el.innerHTML = `
       <div class="empty">
         <div class="empty-icon">📭</div>
         <div class="empty-text">No requests yet</div>
-        <div class="empty-sub">Your latest leave request will appear here</div>
+        <div class="empty-sub">Your latest request will appear here</div>
       </div>`;
   } else {
-    el.innerHTML = buildRequestHTML(latest);
+    el.innerHTML = buildRequestHTML(requests[0]);
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // RENDER HISTORY
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 function renderHistory() {
   const el = document.getElementById('historyList');
   if (!requests.length) {
@@ -789,7 +814,6 @@ function renderHistory() {
       <div class="empty">
         <div class="empty-icon">📋</div>
         <div class="empty-text">No leave requests yet</div>
-        <div class="empty-sub">Your submitted requests will appear here</div>
       </div>`;
     return;
   }
@@ -797,14 +821,9 @@ function renderHistory() {
 }
 
 function buildRequestHTML(r) {
-  const badge  = badgeHTML(r.status);
-  const start  = fmtDate(r.start_date);
-  const end    = fmtDate(r.end_date);
-  const sub    = fmtDateTime(r.submitted_at);
+  const badge   = badgeHTML(r.status);
   const comment = r.approval_comments
-    ? `<div class="request-comment">💬 ${r.approval_comments}</div>`
-    : '';
-
+    ? `<div class="request-comment">💬 ${r.approval_comments}</div>` : '';
   return `
     <div class="request-item fade-in">
       <div class="request-header">
@@ -814,33 +833,31 @@ function buildRequestHTML(r) {
         </div>
         ${badge}
       </div>
-      <div class="request-dates">📅 ${start} → ${end} &nbsp;·&nbsp; ${r.total_days} day(s)</div>
+      <div class="request-dates">📅 ${fmtDate(r.start_date)} → ${fmtDate(r.end_date)} &nbsp;·&nbsp; ${r.total_days} day(s)</div>
       <div class="request-reason">"${r.reason}"</div>
       ${comment}
-      <div style="font-size:11px;color:var(--slate);margin-top:8px">Submitted ${sub}</div>
+      <div style="font-size:11px;color:var(--slate);margin-top:8px">Submitted ${fmtDateTime(r.submitted_at)}</div>
     </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // RENDER BALANCE
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 function renderBalance() {
   const year = new Date().getFullYear();
   document.getElementById('balanceYear').textContent = `Leave balances for ${year}`;
   const el = document.getElementById('balanceList');
-
   if (!balances.length) {
     el.innerHTML = `
       <div class="card">
         <div class="empty">
           <div class="empty-icon">📊</div>
           <div class="empty-text">No balance data</div>
-          <div class="empty-sub">Your balances will appear after HR initializes them</div>
+          <div class="empty-sub">HR will sync your balances shortly</div>
         </div>
       </div>`;
     return;
   }
-
   el.innerHTML = `<div class="card">` +
     balances.map(b => `
       <div class="balance-row">
@@ -866,17 +883,17 @@ function renderBalance() {
     ).join('') + `</div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // SUBMIT LEAVE
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 async function submitLeave() {
   hideAlert('applyAlert');
 
-  const typeId  = document.getElementById('applyType').value;
-  const start   = document.getElementById('applyStart').value;
-  const end     = document.getElementById('applyEnd').value;
-  const reason  = document.getElementById('applyReason').value.trim();
-  const file    = document.getElementById('applyFile').files[0];
+  const typeId = document.getElementById('applyType').value;
+  const start  = document.getElementById('applyStart').value;
+  const end    = document.getElementById('applyEnd').value;
+  const reason = document.getElementById('applyReason').value.trim();
+  const file   = document.getElementById('applyFile').files[0];
 
   if (!typeId || !start || !end || !reason) {
     showAlert('applyAlert', 'Please fill in all required fields.', 'error');
@@ -892,16 +909,15 @@ async function submitLeave() {
 
   const days = Math.round((endD - startD) / 86400000) + 1;
   const lt   = leaveTypes.find(t => t.id == typeId);
+  const btn  = document.getElementById('submitBtn');
 
-  const btn = document.getElementById('submitBtn');
   btn.disabled    = true;
   btn.textContent = 'Submitting...';
 
   try {
-    // Upload attachment if provided
     let attachmentUrl = null;
     if (file) {
-      const path = `${currentEmployee.id}/${Date.now()}_${file.name}`;
+      const path = `${currentEmployee?.id || 'unknown'}/${Date.now()}_${file.name}`;
       const { error: uploadErr } = await sb.storage
         .from('leave-attachments').upload(path, file);
       if (!uploadErr) {
@@ -911,41 +927,37 @@ async function submitLeave() {
       }
     }
 
-    // Generate reference number
     const refNo = `LV-${new Date().toISOString().slice(0,7).replace('-','')}-${Math.floor(Math.random()*9000)+1000}`;
 
-    // Insert request
     const { error } = await sb.from('leave_requests').insert({
-      reference_no:   refNo,
-      employee_id:    currentEmployee.id,
-      employee_code:  currentEmployee.employee_code,
-      leave_type_id:  typeId,
-      leave_type_name: lt.name,
-      start_date:     start,
-      end_date:       end,
-      total_days:     days,
-      reason:         reason,
-      attachment_url: attachmentUrl,
-      status:         'Pending',
+      reference_no:    refNo,
+      employee_id:     currentEmployee?.id,
+      employee_code:   currentEmployee?.employee_code || '',
+      leave_type_id:   typeId,
+      leave_type_name: lt?.name || '',
+      start_date:      start,
+      end_date:        end,
+      total_days:      days,
+      reason,
+      attachment_url:  attachmentUrl,
+      status:          'Pending',
       synced_to_local: false
     });
 
     if (error) throw error;
 
     showAlert('applyAlert',
-      `✅ Leave request submitted!\n\nReference: ${refNo}\nStatus: Pending approval`,
+      `✅ Request submitted!\n\nReference: ${refNo}\nStatus: Pending approval`,
       'success');
 
-    // Reset form
-    document.getElementById('applyType').value    = '';
-    document.getElementById('applyStart').value   = '';
-    document.getElementById('applyEnd').value     = '';
-    document.getElementById('applyReason').value  = '';
-    document.getElementById('applyFile').value    = '';
+    document.getElementById('applyType').value   = '';
+    document.getElementById('applyStart').value  = '';
+    document.getElementById('applyEnd').value    = '';
+    document.getElementById('applyReason').value = '';
+    document.getElementById('applyFile').value   = '';
     document.getElementById('fileName').textContent = '';
     document.getElementById('daysCount').textContent = '—';
 
-    // Refresh data
     await loadRequests();
     renderHome();
 
@@ -957,26 +969,20 @@ async function submitLeave() {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // NAVIGATION
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 function showPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
   document.getElementById(pageId).classList.add('active');
-
   const navMap = {
-    pageHome:    'navHome',
-    pageApply:   'navApply',
-    pageHistory: 'navHistory',
-    pageBalance: 'navBalance'
+    pageHome: 'navHome', pageApply: 'navApply',
+    pageHistory: 'navHistory', pageBalance: 'navBalance'
   };
   const nav = document.getElementById(navMap[pageId]);
   if (nav) nav.classList.add('active');
-
   window.scrollTo(0, 0);
-
   if (pageId === 'pageHistory') renderHistory();
   if (pageId === 'pageBalance') renderBalance();
 }
@@ -986,9 +992,9 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 // HELPERS
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
 function calcDays() {
   const s = document.getElementById('applyStart').value;
   const e = document.getElementById('applyEnd').value;
@@ -1035,9 +1041,7 @@ function fmtDateTime(d) {
   });
 }
 
-function firstName(name) {
-  return name?.split(' ')[0] || 'there';
-}
+function firstName(name) { return name?.split(' ')[0] || 'there'; }
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -1054,11 +1058,10 @@ function hideAlert(id) {
   document.getElementById(id).className = 'alert';
 }
 
-// Enter key on login
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('loginScreen').classList.contains('active')) {
+  if (e.key === 'Enter' &&
+    document.getElementById('loginScreen').classList.contains('active'))
     doLogin();
-  }
 });
 </script>
 </body>
